@@ -4,7 +4,21 @@
     "test:watch": "deno test --watch"
   },
   "imports": {
-    "std/": "https://deno.land/std/"
+    "std/": "jsr:/@std/",
+    "@std/assert": "jsr:@std/assert@^1.0.0",
+    "@core/": "./src/core/",
+    "@sources/": "./src/sources/",
+    "@retrieval/": "./src/retrieval/",
+    "@processors/": "./src/processors/",
+    "@models/": "./src/models/",
+    "@database/": "./src/database/",
+    "@query/": "./src/query/",
+    "@cli/": "./src/cli/",
+    "@api/": "./src/api/",
+    "@mcp/": "./src/mcp/",
+    "@types/": "./src/types/",
+    "@utils/": "./src/utils/",
+    "@labs/": "./src/labs/"
   },
   "fmt": {
     "include": ["src/", "test/"],
