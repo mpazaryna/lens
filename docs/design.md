@@ -17,30 +17,19 @@ Lens is a next-generation feed aggregator that uses local AI models to intellige
 
 ### 3.1 High-Level Architecture
 
-```
-                             [RSS Source Registry]
-                                     │
-                                     ▼
-                             [Retrieval Engine]
-                            /                 \
-                           /                   \
-              [Video Content Path]      [Article Content Path]
-                     │                           │
-                     ▼                           ▼
-           [Video Processor]             [Article Processor]
-                     │                           │
-                     ▼                           ▼
-           [Video Embeddings]            [Article Embeddings]
-                     │                           │
-                     └─────────┬─────────────────┘
-                               ▼
-                        [Vector Database]
-                               │
-                               ▼
-                        [Query Engine]
-                               │
-                               ▼
-                        [User Interface]
+```mermaid
+flowchart TD
+    A[RSS Source Registry] --> B[Retrieval Engine]
+    B --> C[Video Content Path]
+    B --> D[Article Content Path]
+    C --> E[Video Processor]
+    D --> F[Article Processor]
+    E --> G[Video Embeddings]
+    F --> H[Article Embeddings]
+    G --> I[Vector Database]
+    H --> I
+    I --> J[Query Engine]
+    J --> K[User Interface]
 ```
 
 ### 3.2 Core Components
@@ -125,7 +114,7 @@ interface ContentItem {
   url: string;
   publishDate: number; // timestamp
   fetchDate: number; // timestamp
-  
+
   // Content-specific fields
   videoMetadata?: {
     duration: number;
@@ -134,14 +123,14 @@ interface ContentItem {
     thumbnail: string;
     transcript?: string;
   };
-  
+
   articleMetadata?: {
     wordCount: number;
     readingTime: number;
     author?: string;
     fullText?: string;
   };
-  
+
   // AI-generated fields
   topics: string[];
   embedding: number[];
