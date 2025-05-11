@@ -124,96 +124,6 @@ Despite its lower profile, RSS has maintained significant relevance and has expe
 
 4. **Workflow Automation** - RSS serves as input for IFTTT, Zapier, and custom automation workflows.
 
-```mermaid
-flowchart LR
-    subgraph Sources
-        blogs[Blogs]
-        news[News Sites]
-        podcasts[Podcasts]
-        journals[Academic Journals]
-        github[Software Repositories]
-    end
-    
-    subgraph Collection
-        reader[RSS Reader]
-    end
-    
-    subgraph Usage
-        personal[Personal Reading]
-        research[Research]
-        monitoring[Monitoring]
-        automation[Automation]
-    end
-    
-    blogs --> reader
-    news --> reader
-    podcasts --> reader
-    journals --> reader
-    github --> reader
-    
-    reader --> personal
-    reader --> research
-    reader --> monitoring
-    reader --> automation
-```
-
-## Information Overload Context
-
-The modern information environment is characterized by unprecedented volume, velocity, and variety of content, creating several challenges:
-
-### Current Challenges
-
-1. **Attention Economy** - Content providers compete aggressively for limited user attention.
-
-2. **Filter Bubbles** - Algorithm-curated feeds tend to reinforce existing beliefs and limit exposure to diverse perspectives.
-
-3. **Signal-to-Noise Ratio** - Identifying valuable content amid the deluge of information becomes increasingly difficult.
-
-4. **Cognitive Load** - The constant stream of information contributes to decision fatigue and reduced cognitive capacity.
-
-### RSS as a Solution
-
-RSS addresses these challenges through its fundamental design principles:
-
-1. **Pull vs. Push** - Users pull content when ready rather than having it pushed constantly.
-
-2. **Chronological Organization** - Content is typically presented chronologically rather than by algorithmic relevance.
-
-3. **Source Transparency** - Users know exactly where information originates.
-
-4. **Reduced Friction** - Standardized formats eliminate the need to navigate different web interfaces.
-
-```mermaid
-flowchart TD
-    subgraph "Traditional Content Consumption"
-        visit[Visit Multiple Sites]
-        navigate[Navigate Different UIs]
-        distract[Encounter Distractions]
-        miss[Miss Updates]
-    end
-    
-    subgraph "RSS Consumption"
-        subscribe[Subscribe to Feeds]
-        consolidate[Consolidate in One Interface]
-        focus[Focus on Content]
-        complete[Complete Coverage]
-    end
-    
-    visit --> navigate
-    navigate --> distract
-    distract --> miss
-    
-    subscribe --> consolidate
-    consolidate --> focus
-    focus --> complete
-    
-    classDef traditional fill:#ffeded,stroke:#333,stroke-width:1px
-    classDef rss fill:#efffef,stroke:#333,stroke-width:1px
-    
-    class visit,navigate,distract,miss traditional
-    class subscribe,consolidate,focus,complete rss
-```
-
 ## AI Enhancement of RSS
 
 The integration of artificial intelligence with RSS creates powerful opportunities to address information overload while preserving the user-centric advantages of the format:
@@ -234,42 +144,6 @@ The integration of artificial intelligence with RSS creates powerful opportuniti
 
 7. **Content Extraction** - Retrieving full content from partial feeds to enable comprehensive processing.
 
-```mermaid
-flowchart LR
-    subgraph Input
-        feeds[RSS Feeds]
-    end
-    
-    subgraph "AI Processing"
-        extract[Content Extraction]
-        analyze[Semantic Analysis]
-        summarize[Summarization]
-        translate[Translation]
-        classify[Classification]
-        cluster[Clustering]
-    end
-    
-    subgraph Output
-        prioritized[Prioritized Content]
-        categorized[Categorized Items]
-        abstracted[Content Summaries]
-        insights[Content Insights]
-    end
-    
-    feeds --> extract
-    extract --> analyze
-    analyze --> summarize
-    analyze --> translate
-    analyze --> classify
-    analyze --> cluster
-    
-    summarize --> abstracted
-    translate --> abstracted
-    classify --> categorized
-    cluster --> prioritized
-    analyze --> insights
-```
-
 ### Implementation Architectures
 
 1. **Client-Side Processing** - AI capabilities embedded in RSS readers process content locally, preserving privacy.
@@ -279,43 +153,6 @@ flowchart LR
 3. **Hybrid Approaches** - Local preferences and profiles guide server-side processing for personalized results.
 
 4. **Federated Systems** - Collaborative filtering across users with similar interests while preserving privacy.
-
-```mermaid
-flowchart TD
-    subgraph "Data Sources"
-        pub1[Publisher 1]
-        pub2[Publisher 2]
-        pub3[Publisher 3]
-    end
-    
-    subgraph "RSS Processing Layer"
-        fetch[Feed Fetcher]
-        parse[Feed Parser]
-        aiproc[AI Processor]
-        enrich[Content Enrichment]
-        store[Feed Storage]
-    end
-    
-    subgraph "User Layer"
-        api[API Access]
-        ui[User Interface]
-        pref[User Preferences]
-    end
-    
-    pub1 --> fetch
-    pub2 --> fetch
-    pub3 --> fetch
-    
-    fetch --> parse
-    parse --> aiproc
-    aiproc --> enrich
-    enrich --> store
-    
-    store --> api
-    api --> ui
-    pref --> aiproc
-    pref --> api
-```
 
 ## Future Prospects
 

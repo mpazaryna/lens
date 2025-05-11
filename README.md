@@ -11,6 +11,7 @@ Lens is a next-generation feed aggregator that uses local AI models to intellige
 - **Natural Language Queries**: Ask for content in plain English
 - **Personalized Recommendations**: Learns your preferences over time
 - **Command-Line Interface**: Fast, efficient content discovery
+- **Functional Programming**: Built with functional programming principles for clarity and maintainability
 
 ## Getting Started
 

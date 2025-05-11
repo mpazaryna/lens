@@ -8,12 +8,13 @@ This document describes the architectural design of the Lens content-aware feed 
 
 The Lens architecture adheres to the following principles:
 
-1. **Component-Based Design**: The system is organized into loosely coupled components with well-defined interfaces.
-2. **Separation of Concerns**: Each component has a specific responsibility and minimal knowledge of other components.
-3. **Content Type Specialization**: Processing paths are specialized for different content types (video, article).
-4. **Local-First Processing**: AI operations run locally to maintain privacy and control.
-5. **Extensibility**: The architecture allows for adding new content types and processing capabilities.
-6. **Test-Driven Development**: All components have comprehensive test coverage.
+1. **Functional Programming**: The system is built using functional programming principles rather than object-oriented programming for improved clarity, testability, and maintainability.
+2. **Component-Based Design**: The system is organized into loosely coupled components with well-defined interfaces.
+3. **Separation of Concerns**: Each component has a specific responsibility and minimal knowledge of other components.
+4. **Content Type Specialization**: Processing paths are specialized for different content types (video, article).
+5. **Local-First Processing**: AI operations run locally to maintain privacy and control.
+6. **Extensibility**: The architecture allows for adding new content types and processing capabilities.
+7. **Test-Driven Development**: All components have comprehensive test coverage.
 
 ## 3. System Architecture Overview
 
@@ -188,7 +189,7 @@ sequenceDiagram
     participant CP as Content Processor
     participant MCP as MCP Server
     participant DB as Vector Database
-    
+
     SR->>RE: Provide source list
     RE->>RE: Fetch RSS feeds
     RE->>CP: Route content by type
@@ -207,7 +208,7 @@ sequenceDiagram
     participant QE as Query Engine
     participant MCP as MCP Server
     participant DB as Vector Database
-    
+
     UI->>QE: Submit query
     QE->>MCP: Parse natural language
     MCP->>QE: Return structured query

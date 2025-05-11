@@ -31,10 +31,10 @@ By participating in this project, you agree to maintain a respectful and inclusi
    ```bash
    # Install Deno if you haven't already
    # https://deno.land/#installation
-   
+
    # Install Ollama if you haven't already
    # https://ollama.ai/download
-   
+
    # Run the setup script
    deno run --allow-all setup.ts
    ```
@@ -45,24 +45,24 @@ By participating in this project, you agree to maintain a respectful and inclusi
    ```bash
    git checkout -b feature/your-feature-name
    ```
-   
+
 2. **Make your changes** and commit them with clear, descriptive commit messages:
    ```bash
    git commit -m "Add feature: description of the changes"
    ```
-   
+
 3. **Write or update tests** for your changes (see [Testing Requirements](#testing-requirements))
 
 4. **Run tests** to ensure they pass:
    ```bash
    deno test
    ```
-   
+
 5. **Push your branch** to your fork:
    ```bash
    git push origin feature/your-feature-name
    ```
-   
+
 6. **Submit a pull request** to the main repository
 
 ## Testing Requirements
@@ -99,6 +99,20 @@ deno test path/to/test_file.ts
 7. Maintainers may request changes or improvements before merging
 
 ## Coding Standards
+
+### Programming Paradigm
+
+Lens uses functional programming principles rather than object-oriented programming. When contributing code:
+
+- Write pure functions whenever possible
+- Treat data as immutable
+- Compose complex operations from simpler functions
+- Minimize and make state changes explicit
+- Avoid classes with internal state, inheritance, and methods that modify object state
+
+For detailed examples and explanations, see our [Functional Programming Guide](./docs/devlog/DEV-002-functional-programming.md).
+
+### General Standards
 
 - Follow the TypeScript best practices
 - Use consistent formatting (the project uses Deno's built-in formatter)
