@@ -14,10 +14,12 @@ src/
 ├── processors/         # Content processing paths
 │   ├── video/          # Video content processing
 │   └── article/        # Article content processing
-├── models/             # Model Context Protocol Server
+├── models/             # Model Context Protocol Server implementation
 ├── database/           # Vector Database implementation
 ├── query/              # Query Engine implementation
 ├── cli/                # Command-line interface
+├── api/                # REST API server (CLI facade)
+├── mcp/                # Model Context Protocol API server (CLI facade)
 ├── types/              # TypeScript type definitions
 ├── utils/              # Utility functions
 └── labs/               # Experimental features and prototypes
@@ -82,6 +84,19 @@ src/
 - Output formatting
 - Feedback collection
 
+### `api/`
+- REST API server implementation
+- CLI command mapping
+- Request/response handling
+- Authentication and authorization
+- Rate limiting
+
+### `mcp/`
+- Model Context Protocol API server
+- AI model operation endpoints
+- CLI facade for model operations
+- Model request/response formatting
+
 ### `types/`
 - Shared interfaces (FeedSource, ContentItem, etc.)
 - Type declarations
@@ -122,5 +137,7 @@ This folder structure directly maps to the core components described in section 
 - Vector Database → `database/`
 - Query Engine → `query/`
 - User Interface (CLI) → `cli/`
+- REST API Server → `api/`
+- Model Context Protocol API Server → `mcp/`
 
 The structure supports the phased development approach outlined in section 6.2 of the design document.
