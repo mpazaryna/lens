@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "test": "deno test",
+    "test:watch": "deno test --watch"
+  },
+  "imports": {
+    "std/": "https://deno.land/std/"
+  },
+  "fmt": {
+    "include": ["src/", "test/"],
+    "indentWidth": 2,
+    "lineWidth": 80,
+    "singleQuote": false
+  }
+}
