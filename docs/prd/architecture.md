@@ -33,9 +33,21 @@ flowchart TD
     H --> I
     I --> J[Query Engine]
     J --> K[User Interface]
-    L[Model Context Protocol Server] --- E
+
+    M[Template System] --> L[Model Context Protocol Server]
+    L --- E
     L --- F
     L --- J
+
+    subgraph Templates
+    N[Content Analysis Templates]
+    O[Query Processing Templates]
+    P[User Interaction Templates]
+    end
+
+    N --> M
+    O --> M
+    P --> M
 ```
 
 ### 3.2 Logical View
@@ -163,7 +175,22 @@ The Lens system is organized into the following logical layers:
 - `filterByContentType(type, params)`: Filter content by type
 - `filterByTopic(topic, params)`: Filter content by topic
 
-### 4.7 User Interface (CLI)
+### 4.7 Template System
+
+**Purpose**: Manages external markdown templates for all LLM interactions.
+
+**Key Responsibilities**:
+- Load and render templates from markdown files
+- Process template variables and conditional logic
+- Provide standardized format for LLM prompts
+- Enable separation of prompt engineering from code
+
+**Interfaces**:
+- `loadTemplate(path)`: Load a template from the filesystem
+- `renderTemplate(template, variables)`: Render a template with variables
+- `callLLMWithTemplate(path, variables, options)`: Process a template and call the LLM
+
+### 4.8 User Interface (CLI)
 
 **Purpose**: Provides command-line interface for user interaction.
 
@@ -187,15 +214,20 @@ sequenceDiagram
     participant SR as Source Registry
     participant RE as Retrieval Engine
     participant CP as Content Processor
+    participant TS as Template System
     participant MCP as MCP Server
     participant DB as Vector Database
 
     SR->>RE: Provide source list
     RE->>RE: Fetch RSS feeds
     RE->>CP: Route content by type
-    CP->>MCP: Request embeddings
+    CP->>TS: Get content analysis template
+    TS->>CP: Return rendered template
+    CP->>MCP: Request embeddings with template
     MCP->>CP: Return embeddings
-    CP->>MCP: Request content analysis
+    CP->>TS: Get relevance scoring template
+    TS->>CP: Return rendered template
+    CP->>MCP: Request content analysis with template
     MCP->>CP: Return topics and relevance
     CP->>DB: Store processed item
 ```
@@ -206,15 +238,21 @@ sequenceDiagram
 sequenceDiagram
     participant UI as User Interface
     participant QE as Query Engine
+    participant TS as Template System
     participant MCP as MCP Server
     participant DB as Vector Database
 
     UI->>QE: Submit query
-    QE->>MCP: Parse natural language
+    QE->>TS: Get query parsing template
+    TS->>QE: Return rendered template
+    QE->>MCP: Parse natural language with template
     MCP->>QE: Return structured query
     QE->>DB: Execute database query
     DB->>QE: Return matching items
-    QE->>QE: Rank results
+    QE->>TS: Get ranking template
+    TS->>QE: Return rendered template
+    QE->>MCP: Request result ranking with template
+    MCP->>QE: Return ranked results
     QE->>UI: Display ranked content
 ```
 
