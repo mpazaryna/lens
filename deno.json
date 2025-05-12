@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "test": "deno test --allow-env --allow-read --allow-write",
+    "test": "deno test --allow-env --allow-read --allow-write --allow-net",
     "test:watch": "deno test --watch"
   },
   "imports": {
@@ -9,6 +9,8 @@
     "@std/dotenv": "https://deno.land/std@0.208.0/dotenv/mod.ts",
     "@std/path": "https://deno.land/std@0.208.0/path/mod.ts",
     "@monads": "https://deno.land/x/monads@v0.5.10/mod.ts",
+    "@langchain/core": "npm:@langchain/core@^0.1.48",
+    "@langchain/community": "npm:@langchain/community@^0.0.44",
     "@src/": "./src/"
   },
   "fmt": {

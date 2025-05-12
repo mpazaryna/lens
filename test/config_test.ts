@@ -153,17 +153,44 @@ Deno.test("loadConfig loads from environment variables", async () => {
 });
 
 Deno.test("loadConfig returns error for missing required values", async () => {
-  await withEnv({
-    LENS_LANGSMITH_API_KEY: "", // Explicitly set to empty
-  }, async () => {
-    const result = await loadConfig();
-    assertEquals(result.isErr(), true);
+  // Create a temporary directory without a .env file
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
+  
+  try {
+    // Change to the temp directory to avoid loading any .env file
+    Deno.chdir(tempDir);
+    
+    // Clear all relevant environment variables
+    await withEnv({
+      LENS_LANGSMITH_API_KEY: "", // Explicitly set to empty
+      LENS_DATA_DIR: "/tmp/lens", // Set other required values
+      LENS_PORT: "8000",
+      LENS_LOG_LEVEL: "info",
+      LENS_OLLAMA_BASE_URL: "http://localhost:11434",
+      LENS_OLLAMA_EMBEDDING_MODEL: "nomic-embed-text",
+      LENS_OLLAMA_LLM_MODEL: "llama2",
+      LENS_LANGCHAIN_TRACING: "false",
+      LENS_LANGSMITH_PROJECT: "lens-test",
+      LENS_LANGSMITH_TRACING_ENABLED: "true",
+      LENS_DB_PATH: "/tmp/lens/lens.db",
+      LENS_VECTOR_DB_URL: "",
+    }, async () => {
+      const result = await loadConfig();
+      assertEquals(result.isErr(), true);
 
-    if (result.isErr()) {
-      const error = result.unwrapErr();
-      assertStringIncludes(error.message, "LangSmith API Key");
-    }
-  });
+      if (result.isErr()) {
+        const error = result.unwrapErr();
+        assertStringIncludes(error.message, "LangSmith API Key");
+      }
+    });
+  } finally {
+    // Restore original directory
+    Deno.chdir(originalCwd);
+    
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
 });
 
 // This test requires temporarily writing a .env file

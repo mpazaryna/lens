@@ -159,7 +159,7 @@ export function validateConfig(config: AppConfig): Result<AppConfig, ConfigError
     { name: "LangSmith API Key", value: config.langSmith.apiKey },
   ];
 
-  const missing = requiredValues.filter(item => !item.value);
+  const missing = requiredValues.filter(item => !item.value || item.value.trim() === "");
 
   if (missing.length > 0) {
     const missingNames = missing.map(item => item.name).join(", ");
