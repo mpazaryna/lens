@@ -12,7 +12,8 @@
     "@monads": "https://deno.land/x/monads@v0.5.10/mod.ts",
     "@langchain/core": "npm:@langchain/core@^0.1.48",
     "@langchain/community": "npm:@langchain/community@^0.0.44",
-    "@src/": "./src/"
+    "@src/": "./src/",
+    "@prompts/": "./prompts/"
   },
   "fmt": {
     "include": ["src/", "test/"],
