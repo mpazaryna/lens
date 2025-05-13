@@ -1,5 +1,5 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { validateOllamaConnection } from "@src/labs/ollama.ts";
+import { validateOllamaConnection } from "../ollama.ts";
 
 Deno.test({
   name: "validateOllamaConnection - real connection test",

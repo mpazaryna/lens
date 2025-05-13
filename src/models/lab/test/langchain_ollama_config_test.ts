@@ -1,5 +1,5 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { chatWithOllamaConfig } from "@src/labs/langchain_ollama_config.ts";
+import { chatWithOllamaConfig } from "../langchain_ollama_config.ts";
 
 // Helper to set environment variables for testing
 async function withEnv(

@@ -1,5 +1,5 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { chatWithOllama } from "@src/labs/langchain_ollama.ts";
+import { chatWithOllama } from "../langchain_ollama.ts";
 
 Deno.test({
   name: "chatWithOllama - simple message test",

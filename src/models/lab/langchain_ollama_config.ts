@@ -7,7 +7,7 @@
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { getConfig } from "@src/config.ts";
+import { getConfig } from "@src/config/mod.ts";
 
 /**
  * Response from the chat function

@@ -100,6 +100,17 @@ deno test path/to/test_file.ts
 
 ## Coding Standards
 
+### Labs and Experimental Code
+
+Labs are a part of the folder structure where experimental features, proof-of-concept implementations, and features in incubation are developed. When working with experimental code:
+
+- Label experimental features clearly
+- Document the purpose and status of experimental code
+- Include appropriate tests for experimental features
+- Consider the path to integration with the main codebase
+
+For more details on our labs approach, see our [Labs Approach Guide](./docs/devlog/DEV-005-labs.md).
+
 ### Programming Paradigm
 
 Lens uses functional programming principles rather than object-oriented programming. When contributing code:

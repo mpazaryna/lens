@@ -1,7 +1,8 @@
 {
   "tasks": {
     "test": "deno test --allow-env --allow-read --allow-write --allow-net",
-    "test:watch": "deno test --watch"
+    "test:watch": "deno test --watch",
+    "test:lab": "deno test --allow-read --allow-env src/**/lab/test/*_test.ts"
   },
   "imports": {
     "std/": "jsr:/@std/",
