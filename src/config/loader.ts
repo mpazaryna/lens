@@ -1,91 +1,9 @@
-/**
- * Configuration management for the Lens application.
- *
- * This module handles loading configuration from .env files and environment variables,
- * providing a typed configuration object with validation.
- */
-
+// src/config/loader.ts
 import { load } from "@std/dotenv";
 import { join } from "@std/path";
 import { Result, Ok, Err } from "@monads";
-
-/**
- * Core application configuration
- */
-export interface CoreConfig {
-  dataDir: string;
-  logLevel: "debug" | "info" | "warn" | "error";
-  port: number;
-}
-
-/**
- * LLM configuration
- */
-export interface LLMConfig {
-  ollamaBaseUrl: string;
-  embeddingModel: string;
-  llmModel: string;
-}
-
-/**
- * LangChain configuration
- */
-export interface LangChainConfig {
-  tracing: boolean;
-}
-
-/**
- * LangSmith configuration
- */
-export interface LangSmithConfig {
-  apiKey: string;
-  project: string;
-  tracingEnabled: boolean;
-}
-
-/**
- * Database configuration
- */
-export interface DatabaseConfig {
-  dbPath: string;
-  vectorDbUrl?: string;
-}
-
-/**
- * Complete application configuration
- */
-export interface AppConfig {
-  core: CoreConfig;
-  llm: LLMConfig;
-  langChain: LangChainConfig;
-  langSmith: LangSmithConfig;
-  database: DatabaseConfig;
-}
-
-/**
- * Configuration error
- */
-export class ConfigError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ConfigError";
-  }
-}
-
-/**
- * Get the default data directory based on the operating system
- */
-export function defaultDataDir(): string {
-  const homeDir = Deno.env.get("HOME") || Deno.env.get("USERPROFILE") || ".";
-
-  if (Deno.build.os === "darwin") {
-    return join(homeDir, "Library", "Application Support", "lens");
-  } else if (Deno.build.os === "windows") {
-    return join(homeDir, "AppData", "Roaming", "lens");
-  } else {
-    return join(homeDir, ".config", "lens");
-  }
-}
+import { AppConfig, ConfigError } from "./types.ts";
+import { defaultDataDir } from "./defaults.ts";
 
 /**
  * Load configuration from .env file and environment variables

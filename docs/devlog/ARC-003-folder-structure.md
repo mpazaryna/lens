@@ -20,9 +20,7 @@ src/
 ├── cli/                # Command-line interface
 ├── api/                # REST API server (CLI facade)
 ├── mcp/                # Model Context Protocol API server (CLI facade)
-├── types/              # TypeScript type definitions
-├── utils/              # Utility functions
-└── labs/               # Experimental features and prototypes
+└── utils/              # Utility functions
 ```
 
 ## Directory Purposes
@@ -108,23 +106,17 @@ src/
 - Logging
 - Text processing utilities
 
-### `labs/`
-- Experimental features
-- Proof-of-concept implementations
-- Alternative approaches
-- Features in incubation
-
 ## Development Guidelines
 
 1. **Component Isolation**: Each directory should contain code that is specific to its domain, minimizing dependencies on other components.
 
-2. **Interface-First Design**: Define clear interfaces in the `types/` directory before implementing components.
+2. **Interface-First Design**: Define clear interfaces in the `types.ts` file within each module.
 
 3. **Shared Utilities**: Common functionality used across multiple components should be placed in `utils/` or `core/`.
 
-4. **Experimental Code**: New experimental features should be developed in the `labs/` directory before being integrated into the main codebase.
+4. **Experimental Code (Labs)**: Labs are not a separate subfolder but rather a part of the folder structure. Each module can contain experimental features, proof-of-concept implementations, and features in incubation. These experimental features should be properly labeled and documented before being integrated into the main codebase.
 
-5. **Testing**: Each component should have corresponding tests in a `__tests__` directory within its folder.
+5. **Testing**: Each component should have corresponding tests in a `test` directory within its folder.
 
 ## Mapping to System Architecture
 
