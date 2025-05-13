@@ -1,5 +1,20 @@
 /**
  * Tests for the Template Engine
+ *
+ * This module contains tests for the template engine functionality.
+ * It tests the following features:
+ * 1. Parsing templates into sections
+ * 2. Processing templates with conditional logic
+ * 3. Rendering templates by substituting variables
+ * 4. Calling LLMs with rendered templates
+ *
+ * These tests ensure that the template engine works correctly and
+ * can be used to create and use templates for LLM interactions.
+ *
+ * @module template_engine_test
+ * @lab Tests for the experimental template engine
+ * @version 0.1.0
+ * @author Lens Team
  */
 
 import { assertEquals, assertExists, assertStringIncludes } from "@std/assert";
@@ -8,6 +23,16 @@ import { TemplateEngine } from "../template_engine.ts";
 // Use the prompts directory
 const templateDir = "./prompts";
 
+/**
+ * Test: parseTemplate extracts sections correctly
+ *
+ * This test verifies that the parseTemplate function correctly extracts
+ * all sections from a markdown template, including the name, description,
+ * input variables, system prompt, user prompt, and output format.
+ *
+ * It creates a sample template with all sections and checks that each
+ * section is correctly extracted and stored in the TemplateContent object.
+ */
 Deno.test({
   name: "TemplateEngine - parseTemplate extracts sections correctly",
   fn() {
@@ -43,6 +68,16 @@ Expected output format.`;
   }
 });
 
+/**
+ * Test: processTemplate handles conditionals correctly
+ *
+ * This test verifies that the processTemplate function correctly processes
+ * conditional logic in templates. It tests both simple conditionals and
+ * equality comparisons.
+ *
+ * It creates a template with multiple conditional blocks and checks that
+ * the correct content is included or excluded based on the variables.
+ */
 Deno.test({
   name: "TemplateEngine - processTemplate handles conditionals correctly",
   fn() {
@@ -82,6 +117,17 @@ Deno.test({
   }
 });
 
+/**
+ * Test: renderTemplate substitutes variables correctly
+ *
+ * This test verifies that the renderTemplate function correctly substitutes
+ * variables in templates. It tests both simple variable substitution and
+ * handling of missing variables.
+ *
+ * It creates a template with multiple variables and checks that each variable
+ * is correctly substituted with its value. It also checks that missing variables
+ * are left as is in the template.
+ */
 Deno.test({
   name: "TemplateEngine - renderTemplate substitutes variables correctly",
   fn() {
@@ -108,7 +154,18 @@ Deno.test({
   }
 });
 
-// This test requires Ollama to be running locally
+/**
+ * Test: callLLM sends prompts to LLM
+ *
+ * This test verifies that the callLLM function correctly sends prompts to an LLM
+ * and receives a response. It tests the basic functionality of calling an LLM
+ * with a system prompt and a user prompt.
+ *
+ * The test is designed to work even if Ollama is not running locally. It checks
+ * the structure of the response and handles both success and error cases.
+ *
+ * Note: This test requires Ollama to be running locally for full testing.
+ */
 Deno.test({
   name: "TemplateEngine - callLLM sends prompts to LLM",
   async fn() {
