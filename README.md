@@ -107,7 +107,7 @@ flowchart TD
 
 ## Development Status
 
-Lens is currently in active development. See the [project roadmap](docs/roadmap.md) for more details on upcoming features and milestones.
+Lens is currently in active development. See the [project roadmap](prd/roadmap.md) for more details on upcoming features and milestones.
 
 ## Contributing
 
