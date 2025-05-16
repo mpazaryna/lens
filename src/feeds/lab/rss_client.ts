@@ -72,7 +72,7 @@ export const fetchRssFeed = async (
 
     return await response.text();
   } catch (error) {
-    throw new Error(`Error fetching RSS feed: ${error.message}`);
+    throw new Error(`Error fetching RSS feed: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -187,7 +187,7 @@ export const ensureDir = async (dir: string): Promise<void> => {
 export const sanitizeFilename = (name: string): string => {
   // Replace invalid filename characters with underscores and convert to lowercase
   return name
-    .replace(/[/\\?%*:|"<>]/g, '_')  // Replace invalid chars
+    .replace(/[/\\?%*:|"<>]/g, '_')  // Replace invalid chars with single underscore
     .replace(/\s+/g, '_')            // Replace spaces with underscores
     .trim()                          // Trim whitespace
     .toLowerCase();                  // Convert to lowercase
