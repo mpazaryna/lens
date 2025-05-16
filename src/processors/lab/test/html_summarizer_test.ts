@@ -15,6 +15,12 @@ import {
   processHtmlFile
 } from "../html_summarizer.ts";
 
+// IMPORTANT: Disable LangSmith tracing for tests
+// This prevents network dependencies and config validation issues in test environments
+Deno.env.set("LANGCHAIN_TRACING_V2", "false");
+Deno.env.set("LANGCHAIN_API_KEY", "test-key-for-testing-only");
+Deno.env.set("LANGCHAIN_PROJECT", "test-project-for-testing-only");
+
 // Sample HTML content for testing
 const SAMPLE_HTML = `
 <!DOCTYPE html>
@@ -89,7 +95,12 @@ Deno.test({
   async fn() {
     // This test requires Ollama to be running locally
     const content = "Article Title\n\nThis is the first paragraph of the article.\n\nThis is the second paragraph with some bold text.";
-    const result = await summarizeContent(content);
+
+    // Explicitly disable LangSmith tracing for tests
+    const result = await summarizeContent(content, {
+      langSmithTracing: false,
+      temperature: 0.1
+    });
 
     // We don't know if Ollama is running, so we just check the structure
     if (result.success) {
@@ -133,12 +144,14 @@ Deno.test({
     };
 
     try {
-      // Process the HTML file
+      // Process the HTML file with LangSmith tracing disabled
       const result = await processHtmlFile({
         inputPath: "./test-input.html",
         outputDir: "./test-output",
         // Use a small temperature for more deterministic results
         temperature: 0.1,
+        // Explicitly disable LangSmith tracing for tests
+        langSmithTracing: false
       });
 
       // Check the result structure
