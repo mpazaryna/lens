@@ -18,6 +18,7 @@ import { ensureDir } from "https://deno.land/std@0.224.0/fs/ensure_dir.ts";
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { getConfig } from "../../config/mod.ts";
 
 // ============================================================================
 // Types
@@ -33,6 +34,12 @@ export interface SummaryOptions {
   baseUrl?: string;
   /** The temperature for generation (0.0-1.0) */
   temperature?: number;
+  /** Whether to enable LangSmith tracing */
+  langSmithTracing?: boolean;
+  /** LangSmith API key (if not using config) */
+  langSmithApiKey?: string;
+  /** LangSmith project name (if not using config) */
+  langSmithProject?: string;
 }
 
 /**
@@ -135,6 +142,32 @@ export async function summarizeContent(
   options: SummaryOptions = {}
 ): Promise<SummaryResponse> {
   try {
+    // If LangSmith tracing is explicitly disabled, skip config loading
+    if (options.langSmithTracing === false) {
+      // Explicitly disable tracing
+      Deno.env.set("LANGCHAIN_TRACING_V2", "false");
+    } else {
+      try {
+        // Configure LangSmith tracing
+        const config = await getConfig();
+
+        // Use either provided options or config values
+        const apiKey = options.langSmithApiKey || config.langSmith.apiKey;
+        const project = options.langSmithProject || config.langSmith.project;
+
+        if (apiKey) {
+          Deno.env.set("LANGCHAIN_API_KEY", apiKey);
+          Deno.env.set("LANGCHAIN_PROJECT", project);
+          Deno.env.set("LANGCHAIN_TRACING_V2", "true");
+        }
+      } catch (_configError) {
+        // If config loading fails but tracing isn't explicitly disabled,
+        // disable it and continue
+        console.warn("Failed to load LangSmith config, disabling tracing");
+        Deno.env.set("LANGCHAIN_TRACING_V2", "false");
+      }
+    }
+
     // Create the chat model
     const model = new ChatOllama({
       baseUrl: options.baseUrl || "http://localhost:11434",
@@ -257,6 +290,9 @@ export async function processHtmlFile(
       modelName: options.modelName,
       baseUrl: options.baseUrl,
       temperature: options.temperature,
+      langSmithTracing: options.langSmithTracing,
+      langSmithApiKey: options.langSmithApiKey,
+      langSmithProject: options.langSmithProject,
     });
 
     // If summarization failed, return the error
@@ -295,18 +331,23 @@ export async function processHtmlFile(
 if (import.meta.main) {
   console.log("HTML Content Summarizer");
 
-  // Process the specified HTML file
-  const result = await processHtmlFile({
-    inputPath: "./tmp/data/fetched/on-reading-novels.html",
-    outputDir: "./tmp/data/processed",
-    modelName: "llama3.2",
-    temperature: 0.5,
-  });
+  try {
+    // Process the specified HTML file with LangSmith tracing enabled
+    const result = await processHtmlFile({
+      inputPath: "./tmp/data/fetched/on-reading-novels.html",
+      outputDir: "./tmp/data/processed",
+      modelName: "llama3.2",
+      temperature: 0.5,
+      langSmithTracing: true, // Enable LangSmith tracing using config values
+    });
 
-  if (result.success) {
-    console.log("✅ Successfully processed HTML file");
-    console.log("Summary:", result.content);
-  } else {
-    console.error("❌ Failed to process HTML file:", result.error);
+    if (result.success) {
+      console.log("✅ Successfully processed HTML file");
+      console.log("Summary:", result.content);
+    } else {
+      console.error("❌ Failed to process HTML file:", result.error);
+    }
+  } catch (error) {
+    console.error("Error:", error instanceof Error ? error.message : String(error));
   }
 }
