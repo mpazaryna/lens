@@ -12,8 +12,6 @@ src/
 ├── sources/            # RSS Source Registry implementation
 ├── retrieval/          # Retrieval Engine implementation
 ├── processors/         # Content processing paths
-│   ├── video/          # Video content processing
-│   └── article/        # Article content processing
 ├── models/             # Model Context Protocol Server implementation
 ├── database/           # Vector Database implementation
 ├── query/              # Query Engine implementation
@@ -31,7 +29,7 @@ src/
 - System initialization
 - Error handling
 
-### `sources/`
+### `feeds/`
 - Feed source management
 - Source metadata handling
 - Source reliability tracking
