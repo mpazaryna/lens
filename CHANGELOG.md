@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## [v0.3.0] - 2025-05-16 09:59:28 -0400
+
+### Features
+- initial commit for feeds and processors ([`5e692a0`](https://github.com/mpazaryna/lens/commit/5e692a00eec70ba8284501a6133fd7dc6a6bf9ae))
+
+### Bug Fixes
+No fix changes in this release.
+
+### Documentation
+- add devlog on processors ([`3857aa1`](https://github.com/mpazaryna/lens/commit/3857aa1e241a5c3973435decaacc42c56c16811d))
+
+### Chores
+No chore changes in this release.
+
 ## [v0.2.0] - 2025-05-13 19:22:42 -0400
 
 ### Features
