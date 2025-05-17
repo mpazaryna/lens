@@ -7,12 +7,15 @@
  * 3. File processing and saving
  */
 
-import { assertEquals, assertExists } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
-  extractTextFromHtml,
-  summarizeContent,
+  assertEquals,
+  assertExists,
+} from "https://deno.land/std@0.224.0/assert/mod.ts";
+import {
   createOutputFilename,
-  processHtmlFile
+  extractTextFromHtml,
+  processHtmlFile,
+  summarizeContent,
 } from "../html_summarizer.ts";
 
 // IMPORTANT: Disable LangSmith tracing for tests
@@ -66,8 +69,14 @@ Deno.test({
 
     // Check that the text contains the main content
     assertEquals(text.includes("Article Title"), true);
-    assertEquals(text.includes("This is the first paragraph of the article."), true);
-    assertEquals(text.includes("This is the second paragraph with some bold text."), true);
+    assertEquals(
+      text.includes("This is the first paragraph of the article."),
+      true,
+    );
+    assertEquals(
+      text.includes("This is the second paragraph with some bold text."),
+      true,
+    );
 
     // Check that script content is removed
     assertEquals(text.includes("This should be removed"), false);
@@ -75,7 +84,7 @@ Deno.test({
     // Check that navigation is included (simple implementation)
     // A more sophisticated implementation might remove this
     assertEquals(text.includes("Home"), true);
-  }
+  },
 });
 
 // Test 2: Create output filename
@@ -86,7 +95,7 @@ Deno.test({
     const outputFilename = createOutputFilename(inputPath);
 
     assertEquals(outputFilename, "article-summary.md");
-  }
+  },
 });
 
 // Test 3: Content summarization with Ollama
@@ -94,12 +103,13 @@ Deno.test({
   name: "summarizeContent - summarizes content with Ollama",
   async fn() {
     // This test requires Ollama to be running locally
-    const content = "Article Title\n\nThis is the first paragraph of the article.\n\nThis is the second paragraph with some bold text.";
+    const content =
+      "Article Title\n\nThis is the first paragraph of the article.\n\nThis is the second paragraph with some bold text.";
 
     // Explicitly disable LangSmith tracing for tests
     const result = await summarizeContent(content, {
       langSmithTracing: false,
-      temperature: 0.1
+      temperature: 0.1,
     });
 
     // We don't know if Ollama is running, so we just check the structure
@@ -151,7 +161,7 @@ Deno.test({
         // Use a small temperature for more deterministic results
         temperature: 0.1,
         // Explicitly disable LangSmith tracing for tests
-        langSmithTracing: false
+        langSmithTracing: false,
       });
 
       // Check the result structure

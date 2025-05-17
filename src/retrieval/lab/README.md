@@ -1,6 +1,8 @@
 # Content Fetcher Lab
 
-This is an experimental content fetcher for the Lens project. It provides functionality to fetch, save, and process web content from URLs found in JSON files using functional programming principles.
+This is an experimental content fetcher for the Lens project. It provides
+functionality to fetch, save, and process web content from URLs found in JSON
+files using functional programming principles.
 
 ## Features
 
@@ -26,6 +28,7 @@ deno run --allow-net --allow-read --allow-write src/retrieval/lab/content_fetche
 ```
 
 The script will:
+
 1. Load and parse the JSON file
 2. Extract URLs from the JSON data
 3. Fetch content from each URL
@@ -36,10 +39,10 @@ The script will:
 
 ```typescript
 import {
+  fetchAllContent,
+  fetchAndSaveContent,
   fetchContent,
   saveContent,
-  fetchAndSaveContent,
-  fetchAllContent
 } from "./content_fetcher.ts";
 
 // Fetch content from a URL
@@ -52,7 +55,7 @@ await saveContent(html, { path: "./article.html" });
 // Fetch and save in one step
 const result = await fetchAndSaveContent(
   "https://example.com/article",
-  "./output"
+  "./output",
 );
 console.log(`Saved to: ${result.path}`);
 
@@ -60,9 +63,9 @@ console.log(`Saved to: ${result.path}`);
 const results = await fetchAllContent({
   jsonPath: "./data.json",
   outputDir: "./output",
-  concurrency: 3
+  concurrency: 3,
 });
-console.log(`Successfully fetched: ${results.filter(r => r.success).length}`);
+console.log(`Successfully fetched: ${results.filter((r) => r.success).length}`);
 ```
 
 ## API Reference
@@ -70,7 +73,8 @@ console.log(`Successfully fetched: ${results.filter(r => r.success).length}`);
 ### Main Functions
 
 - `fetchAllContent(options)`: Fetch all content from a JSON file
-- `fetchAndSaveContent(url, outputDir, options)`: Fetch content from a URL and save it
+- `fetchAndSaveContent(url, outputDir, options)`: Fetch content from a URL and
+  save it
 - `fetchContent(options)`: Fetch content from a URL
 - `saveContent(content, options)`: Save content to a file
 
@@ -78,9 +82,11 @@ console.log(`Successfully fetched: ${results.filter(r => r.success).length}`);
 
 - `loadJsonFile(jsonPath)`: Load and parse a JSON file
 - `extractUrls(data)`: Extract URLs from parsed JSON data
-- `processBatch(urls, outputDir, options)`: Process a batch of URLs with limited concurrency
+- `processBatch(urls, outputDir, options)`: Process a batch of URLs with limited
+  concurrency
 - `createFilenameFromUrl(url)`: Create a filename from a URL
-- `sanitizeFilename(filename)`: Sanitize a filename by removing invalid characters
+- `sanitizeFilename(filename)`: Sanitize a filename by removing invalid
+  characters
 
 ## Testing
 

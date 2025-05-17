@@ -1,6 +1,8 @@
 # RSS Client Lab
 
-This is an experimental RSS feed client for the Lens project. It provides functionality to fetch, parse, and save RSS feeds using functional programming principles.
+This is an experimental RSS feed client for the Lens project. It provides
+functionality to fetch, parse, and save RSS feeds using functional programming
+principles.
 
 ## Features
 
@@ -22,6 +24,7 @@ deno run --allow-net --allow-write src/feeds/lab/rss_client.ts https://example.c
 ```
 
 The script will:
+
 1. Create a `data` directory in the project root if it doesn't exist
 2. Fetch the RSS feed from the provided URL (or default to austinkleon.com/feed)
 3. Extract the feed title and use it to create a sanitized filename
@@ -31,10 +34,10 @@ The script will:
 
 ```typescript
 import {
+  fetchAndSaveRssFeed,
   fetchRssFeed,
   parseRssFeed,
   saveRssFeed,
-  fetchAndSaveRssFeed
 } from "./rss_client.ts";
 
 // Fetch and parse an RSS feed
@@ -49,7 +52,7 @@ await saveRssFeed(feed, { path: "./feed.json" });
 // Or do everything in one step
 const feed = await fetchAndSaveRssFeed(
   { url: "https://austinkleon.com/feed" },
-  { path: "./feed.json" }
+  { path: "./feed.json" },
 );
 ```
 
@@ -71,9 +74,14 @@ deno test --allow-net src/feeds/lab/test/rss_client_test.ts
 
 ### Functions
 
-- `fetchRssFeed(options: FetchOptions): Promise<string>`: Fetches an RSS feed from a URL
+- `fetchRssFeed(options: FetchOptions): Promise<string>`: Fetches an RSS feed
+  from a URL
 - `parseRssFeed(xml: string): RssFeed`: Parses RSS XML into a structured object
-- `saveRssFeed(feed: RssFeed, options: SaveOptions): Promise<void>`: Saves an RSS feed to a file
-- `fetchAndSaveRssFeed(fetchOptions: FetchOptions, saveOptions: SaveOptions): Promise<RssFeed>`: Combines fetching, parsing, and saving in one operation
-- `ensureDir(dir: string): Promise<void>`: Ensures a directory exists, creating it if necessary
-- `sanitizeFilename(name: string): string`: Sanitizes a string for use as a filename
+- `saveRssFeed(feed: RssFeed, options: SaveOptions): Promise<void>`: Saves an
+  RSS feed to a file
+- `fetchAndSaveRssFeed(fetchOptions: FetchOptions, saveOptions: SaveOptions): Promise<RssFeed>`:
+  Combines fetching, parsing, and saving in one operation
+- `ensureDir(dir: string): Promise<void>`: Ensures a directory exists, creating
+  it if necessary
+- `sanitizeFilename(name: string): string`: Sanitizes a string for use as a
+  filename

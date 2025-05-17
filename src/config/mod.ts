@@ -12,4 +12,4 @@ export * from "./types.ts";
 export { defaultDataDir } from "./defaults.ts";
 
 // Re-export loader functions
-export { loadConfig, validateConfig, getConfig } from "./loader.ts";
+export { getConfig, loadConfig, validateConfig } from "./loader.ts";

@@ -84,8 +84,14 @@ export function extractTextFromHtml(html: string): string {
 
   try {
     // Remove script and style elements
-    let text = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, " ");
-    text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, " ");
+    let text = html.replace(
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+      " ",
+    );
+    text = text.replace(
+      /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
+      " ",
+    );
 
     // Extract content from body if present
     const bodyMatch = text.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
@@ -109,7 +115,7 @@ export function extractTextFromHtml(html: string): string {
     text = text.replace(/&amp;/g, "&");
     text = text.replace(/&lt;/g, "<");
     text = text.replace(/&gt;/g, ">");
-    text = text.replace(/&quot;/g, "\"");
+    text = text.replace(/&quot;/g, '"');
     text = text.replace(/&#39;/g, "'");
 
     // Whitespace already normalized above
@@ -139,7 +145,7 @@ export function extractTextFromHtml(html: string): string {
  */
 export async function summarizeContent(
   content: string,
-  options: SummaryOptions = {}
+  options: SummaryOptions = {},
 ): Promise<SummaryResponse> {
   try {
     // If LangSmith tracing is explicitly disabled, skip config loading
@@ -177,11 +183,14 @@ export async function summarizeContent(
 
     // Create a prompt template
     const prompt = ChatPromptTemplate.fromMessages([
-      ["system", `You are a helpful assistant that summarizes content.
+      [
+        "system",
+        `You are a helpful assistant that summarizes content.
       Create a concise but comprehensive summary of the provided text.
       Focus on the main points, key arguments, and important details.
       Organize the summary in a clear, readable format with paragraphs.
-      Do not include your own opinions or analysis.`],
+      Do not include your own opinions or analysis.`,
+      ],
       ["human", `Please summarize the following content:\n\n${content}`],
     ]);
 
@@ -196,13 +205,11 @@ export async function summarizeContent(
       content: summary,
     };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     return {
       success: false,
-      error: `Failed to summarize content: ${errorMessage}`
+      error: `Failed to summarize content: ${errorMessage}`,
     };
   }
 }
@@ -222,7 +229,7 @@ export async function summarizeContent(
 export async function saveProcessedContent(
   content: string,
   outputPath: string,
-  overwrite: boolean = false
+  overwrite: boolean = false,
 ): Promise<void> {
   try {
     // Check if file exists and we're not overwriting
@@ -246,7 +253,11 @@ export async function saveProcessedContent(
 
     console.log(`Content saved to: ${outputPath}`);
   } catch (error) {
-    throw new Error(`Error saving content: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error saving content: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 
@@ -276,7 +287,7 @@ export function createOutputFilename(inputPath: string): string {
  * @returns Object with success status and either summary content or error message
  */
 export async function processHtmlFile(
-  options: ProcessOptions
+  options: ProcessOptions,
 ): Promise<SummaryResponse> {
   try {
     // Read the HTML file
@@ -312,13 +323,11 @@ export async function processHtmlFile(
       content: summary.content,
     };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     return {
       success: false,
-      error: `Failed to process HTML file: ${errorMessage}`
+      error: `Failed to process HTML file: ${errorMessage}`,
     };
   }
 }
@@ -348,6 +357,9 @@ if (import.meta.main) {
       console.error("❌ Failed to process HTML file:", result.error);
     }
   } catch (error) {
-    console.error("Error:", error instanceof Error ? error.message : String(error));
+    console.error(
+      "Error:",
+      error instanceof Error ? error.message : String(error),
+    );
   }
 }

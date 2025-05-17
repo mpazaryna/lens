@@ -65,7 +65,7 @@ Expected output format.`;
     assertEquals(parsed.systemPrompt, "System prompt content.");
     assertEquals(parsed.userPrompt, "User prompt with {{var1}} and {{var2}}.");
     assertEquals(parsed.outputFormat, "Expected output format.");
-  }
+  },
 });
 
 /**
@@ -105,7 +105,7 @@ Deno.test({
     const variables = {
       condition1: true,
       condition2: false,
-      format: "json"
+      format: "json",
     };
 
     const processed = engine.processTemplate(template, variables);
@@ -114,7 +114,7 @@ Deno.test({
     assertStringIncludes(processed, "JSON format.");
     assertEquals(processed.includes("This should not be included."), false);
     assertEquals(processed.includes("Text format."), false);
-  }
+  },
 });
 
 /**
@@ -143,15 +143,18 @@ Deno.test({
     const variables = {
       name: "John",
       age: 30,
-      color: "blue"
+      color: "blue",
     };
 
     const rendered = engine.renderTemplate(template, variables);
 
     assertStringIncludes(rendered, "Hello, John!");
-    assertStringIncludes(rendered, "Your age is 30 and your favorite color is blue.");
+    assertStringIncludes(
+      rendered,
+      "Your age is 30 and your favorite color is blue.",
+    );
     assertStringIncludes(rendered, "{{missing}} should remain as is.");
-  }
+  },
 });
 
 /**

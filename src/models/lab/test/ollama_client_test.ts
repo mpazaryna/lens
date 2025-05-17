@@ -1,6 +1,6 @@
 /**
  * Tests for the Ollama client module
- * 
+ *
  * This file contains tests for all Ollama client functionality:
  * 1. Basic API validation
  * 2. Simple LangChain integration
@@ -8,16 +8,16 @@
  */
 
 import { assertEquals, assertExists } from "@std/assert";
-import { 
-  validateOllamaConnection, 
-  chatWithOllama, 
-  chatWithOllamaConfig 
+import {
+  chatWithOllama,
+  chatWithOllamaConfig,
+  validateOllamaConnection,
 } from "../ollama_client.ts";
 
 // Helper to set environment variables for testing
 async function withEnv(
   env: Record<string, string>,
-  fn: () => Promise<void> | void
+  fn: () => Promise<void> | void,
 ): Promise<void> {
   const originalEnv: Record<string, string | undefined> = {};
 
@@ -54,20 +54,20 @@ Deno.test({
   async fn() {
     // This test requires Ollama to be running locally
     const result = await validateOllamaConnection();
-    
+
     // We don't know if Ollama is running, so we just check the structure
     if (result.success) {
       assertEquals(result.success, true);
       assertExists(result.data);
       assertEquals(Array.isArray(result.data), true);
       assertEquals(result.error, undefined);
-      
+
       console.log("Available Ollama models:", result.data);
     } else {
       assertEquals(result.success, false);
       assertExists(result.error);
       assertEquals(result.data, undefined);
-      
+
       console.log("Ollama connection failed:", result.error);
     }
   },
@@ -81,7 +81,7 @@ Deno.test({
   async fn() {
     // This test requires Ollama to be running locally
     const result = await chatWithOllama("Hello, how are you?");
-    
+
     // We don't know if Ollama is running, so we just check the structure
     if (result.success) {
       assertEquals(result.success, true);
@@ -89,13 +89,16 @@ Deno.test({
       assertEquals(typeof result.content, "string");
       assertEquals(result.content.length > 0, true);
       assertEquals(result.error, undefined);
-      
-      console.log("Ollama response:", result.content?.substring(0, 100) + "...");
+
+      console.log(
+        "Ollama response:",
+        result.content?.substring(0, 100) + "...",
+      );
     } else {
       assertEquals(result.success, false);
       assertExists(result.error);
       assertEquals(result.content, undefined);
-      
+
       console.log("Ollama chat failed:", result.error);
     }
   },
@@ -115,7 +118,7 @@ Deno.test({
     }, async () => {
       // This test requires Ollama to be running locally
       const result = await chatWithOllamaConfig("Hello, how are you?");
-      
+
       // We don't know if Ollama is running, so we just check the structure
       if (result.success) {
         assertEquals(result.success, true);
@@ -123,13 +126,16 @@ Deno.test({
         assertEquals(typeof result.content, "string");
         assertEquals(result.content.length > 0, true);
         assertEquals(result.error, undefined);
-        
-        console.log("Ollama response with config:", result.content?.substring(0, 100) + "...");
+
+        console.log(
+          "Ollama response with config:",
+          result.content?.substring(0, 100) + "...",
+        );
       } else {
         assertEquals(result.success, false);
         assertExists(result.error);
         assertEquals(result.content, undefined);
-        
+
         console.log("Ollama chat with config failed:", result.error);
       }
     });

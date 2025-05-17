@@ -41,7 +41,7 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import {
   createTemplateEngine,
   LLMOptions,
-  LLMResponse
+  LLMResponse,
 } from "./template_engine.ts";
 
 /**
@@ -104,11 +104,14 @@ export async function extractTopics(
   content: string,
   maxTopics: number = 5,
   format: "json" | "text" = "json",
-  options: LLMOptions = {}
+  options: LLMOptions = {},
 ): Promise<LLMResponse> {
   try {
-    const templateEngine = createTemplateEngine({ templateDir: config.templateDir });
-    const baseUrl = options.baseUrl || config.baseUrl || "http://localhost:11434";
+    const templateEngine = createTemplateEngine({
+      templateDir: config.templateDir,
+    });
+    const baseUrl = options.baseUrl || config.baseUrl ||
+      "http://localhost:11434";
     const modelName = options.modelName || config.defaultModel || "llama3.2";
 
     // Create the chat model
@@ -139,7 +142,8 @@ Extract up to ${maxTopics} topics that best represent the main themes of this co
 `;
 
     if (format === "json") {
-      userPrompt += `Return the topics as a JSON array of objects with "topic" and "relevance" properties. The relevance should be a number between 0 and 1 indicating how central the topic is to the content.`;
+      userPrompt +=
+        `Return the topics as a JSON array of objects with "topic" and "relevance" properties. The relevance should be a number between 0 and 1 indicating how central the topic is to the content.`;
     } else {
       userPrompt += `Return the topics as a simple comma-separated list.`;
     }
@@ -161,9 +165,7 @@ Extract up to ${maxTopics} topics that best represent the main themes of this co
       content: response,
     };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     return {
       success: false,
@@ -208,9 +210,11 @@ export async function reformulateQuery(
   query: string,
   userContext?: string,
   domain?: string,
-  options: LLMOptions = {}
+  options: LLMOptions = {},
 ): Promise<LLMResponse> {
-  const templateEngine = createTemplateEngine({ templateDir: config.templateDir });
+  const templateEngine = createTemplateEngine({
+    templateDir: config.templateDir,
+  });
   const baseUrl = options.baseUrl || config.baseUrl || "http://localhost:11434";
   const modelName = options.modelName || config.defaultModel || "llama3.2";
 
@@ -231,7 +235,7 @@ export async function reformulateQuery(
       modelName,
       baseUrl,
       temperature: options.temperature || 0.5,
-    }
+    },
   );
 }
 
@@ -266,9 +270,11 @@ export async function callTemplate(
   config: TemplateClientConfig,
   templatePath: string,
   variables: Record<string, unknown>,
-  options: LLMOptions = {}
+  options: LLMOptions = {},
 ): Promise<LLMResponse> {
-  const templateEngine = createTemplateEngine({ templateDir: config.templateDir });
+  const templateEngine = createTemplateEngine({
+    templateDir: config.templateDir,
+  });
   const baseUrl = options.baseUrl || config.baseUrl || "http://localhost:11434";
   const modelName = options.modelName || config.defaultModel || "llama3.2";
 
@@ -278,8 +284,10 @@ export async function callTemplate(
     {
       modelName,
       baseUrl,
-      temperature: options.temperature !== undefined ? options.temperature : 0.7,
-    }
+      temperature: options.temperature !== undefined
+        ? options.temperature
+        : 0.7,
+    },
   );
 }
 
@@ -316,20 +324,20 @@ export function createTemplateClient(config: TemplateClientConfig) {
       content: string,
       maxTopics: number = 5,
       format: "json" | "text" = "json",
-      options: LLMOptions = {}
+      options: LLMOptions = {},
     ) => extractTopics(config, content, maxTopics, format, options),
 
     reformulateQuery: (
       query: string,
       userContext?: string,
       domain?: string,
-      options: LLMOptions = {}
+      options: LLMOptions = {},
     ) => reformulateQuery(config, query, userContext, domain, options),
 
     callTemplate: (
       templatePath: string,
       variables: Record<string, unknown>,
-      options: LLMOptions = {}
+      options: LLMOptions = {},
     ) => callTemplate(config, templatePath, variables, options),
   };
 }
@@ -368,7 +376,7 @@ export class TemplateClient {
     content: string,
     maxTopics: number = 5,
     format: "json" | "text" = "json",
-    options: LLMOptions = {}
+    options: LLMOptions = {},
   ): Promise<LLMResponse> {
     return extractTopics(this.config, content, maxTopics, format, options);
   }
@@ -377,7 +385,7 @@ export class TemplateClient {
     query: string,
     userContext?: string,
     domain?: string,
-    options: LLMOptions = {}
+    options: LLMOptions = {},
   ): Promise<LLMResponse> {
     return reformulateQuery(this.config, query, userContext, domain, options);
   }
@@ -385,7 +393,7 @@ export class TemplateClient {
   callTemplate(
     templatePath: string,
     variables: Record<string, unknown>,
-    options: LLMOptions = {}
+    options: LLMOptions = {},
   ): Promise<LLMResponse> {
     return callTemplate(this.config, templatePath, variables, options);
   }
@@ -432,7 +440,7 @@ if (import.meta.main) {
   const queryResult = await client.reformulateQuery(
     query,
     "Intermediate TypeScript developer interested in server-side development",
-    "programming"
+    "programming",
   );
 
   if (queryResult.success) {

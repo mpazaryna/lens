@@ -8,12 +8,12 @@
 
 import { assertEquals, assertExists } from "@std/assert";
 import {
+  ensureDir,
+  fetchAndSaveRssFeed,
   fetchRssFeed,
   parseRssFeed,
+  type RssFeed,
   saveRssFeed,
-  fetchAndSaveRssFeed,
-  ensureDir,
-  type RssFeed
 } from "../rss_client.ts";
 
 // Sample RSS XML for testing
@@ -64,7 +64,7 @@ let savedContent = "";
 const mockWriteTextFile = () => {
   // @ts-ignore: Ignoring type mismatch for testing purposes
   Deno.writeTextFile = (_, content) => {
-    if (typeof content === 'string') {
+    if (typeof content === "string") {
       savedContent = content;
     }
     return Promise.resolve();
@@ -154,7 +154,7 @@ Deno.test("fetchAndSaveRssFeed - should fetch, parse and save RSS feed", async (
   try {
     const feed = await fetchAndSaveRssFeed(
       { url: "https://example.com/feed" },
-      { path: "test.json" }
+      { path: "test.json" },
     );
 
     assertEquals(feed.title, "Test Feed");
@@ -197,7 +197,7 @@ const mockFileSystem = (dirExists = true, isDirectory = true) => {
       gid: 0,
       rdev: 0,
       blksize: 0,
-      blocks: 0
+      blocks: 0,
     } as unknown as Deno.FileInfo);
   };
 
@@ -251,7 +251,10 @@ Deno.test("ensureDir - should throw if path exists but is not a directory", asyn
 
     assertExists(error);
     assertEquals(error instanceof Error, true);
-    assertEquals(error.message.includes("Path exists but is not a directory"), true);
+    assertEquals(
+      error.message.includes("Path exists but is not a directory"),
+      true,
+    );
   } finally {
     restoreFileSystem();
   }

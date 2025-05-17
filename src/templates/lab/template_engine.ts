@@ -194,15 +194,13 @@ export interface TemplateEngineConfig {
  */
 export async function loadTemplate(
   config: TemplateEngineConfig,
-  path: string
+  path: string,
 ): Promise<string> {
   try {
     const fullPath = join(config.templateDir, path);
     return await Deno.readTextFile(fullPath);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to load template at ${path}: ${errorMessage}`);
   }
 }
@@ -338,7 +336,7 @@ export function parseTemplate(template: string): TemplateContent {
  */
 export function processTemplate(
   template: string,
-  variables: Record<string, unknown>
+  variables: Record<string, unknown>,
 ): string {
   // Simple implementation of conditional processing
   // This is a basic version that handles if/else blocks
@@ -346,25 +344,29 @@ export function processTemplate(
   let processed = template;
 
   // Process if/else blocks
-  const conditionalRegex = /{%\s*if\s+(.*?)\s*%}([\s\S]*?)(?:{%\s*else\s*%}([\s\S]*?))?{%\s*endif\s*%}/g;
-  processed = processed.replace(conditionalRegex, (_, condition, ifContent, elseContent = "") => {
-    // Evaluate the condition using the variables
-    // This is a simple evaluation that checks if the variable exists and is truthy
-    const parts = condition.split(/\s*==\s*/);
-    let result: boolean;
+  const conditionalRegex =
+    /{%\s*if\s+(.*?)\s*%}([\s\S]*?)(?:{%\s*else\s*%}([\s\S]*?))?{%\s*endif\s*%}/g;
+  processed = processed.replace(
+    conditionalRegex,
+    (_, condition, ifContent, elseContent = "") => {
+      // Evaluate the condition using the variables
+      // This is a simple evaluation that checks if the variable exists and is truthy
+      const parts = condition.split(/\s*==\s*/);
+      let result: boolean;
 
-    if (parts.length === 2) {
-      // Handle equality comparison
-      const varName = parts[0].trim();
-      const value = parts[1].trim().replace(/^["']|["']$/g, ""); // Remove quotes
-      result = String(variables[varName]) === value;
-    } else {
-      // Handle simple existence/truthiness check
-      result = Boolean(variables[condition.trim()]);
-    }
+      if (parts.length === 2) {
+        // Handle equality comparison
+        const varName = parts[0].trim();
+        const value = parts[1].trim().replace(/^["']|["']$/g, ""); // Remove quotes
+        result = String(variables[varName]) === value;
+      } else {
+        // Handle simple existence/truthiness check
+        result = Boolean(variables[condition.trim()]);
+      }
 
-    return result ? ifContent : elseContent;
-  });
+      return result ? ifContent : elseContent;
+    },
+  );
 
   return processed;
 }
@@ -391,12 +393,14 @@ export function processTemplate(
  */
 export function renderTemplate(
   template: string,
-  variables: Record<string, unknown>
+  variables: Record<string, unknown>,
 ): string {
   // Substitute variables in the template
   return template.replace(/{{(.*?)}}/g, (_, variableName) => {
     const name = variableName.trim();
-    return variables[name] !== undefined ? String(variables[name]) : `{{${name}}}`;
+    return variables[name] !== undefined
+      ? String(variables[name])
+      : `{{${name}}}`;
   });
 }
 
@@ -419,7 +423,7 @@ export function renderTemplate(
  * ```
  */
 export function toLangChainTemplate(
-  templateContent: TemplateContent
+  templateContent: TemplateContent,
 ): ChatPromptTemplate {
   return ChatPromptTemplate.fromMessages([
     ["system", templateContent.systemPrompt],
@@ -458,7 +462,7 @@ export function toLangChainTemplate(
 export async function callLLM(
   systemPrompt: string,
   userPrompt: string,
-  options: LLMOptions = {}
+  options: LLMOptions = {},
 ): Promise<LLMResponse> {
   try {
     // Create the chat model
@@ -485,9 +489,7 @@ export async function callLLM(
       content: response,
     };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     return {
       success: false,
@@ -537,7 +539,7 @@ export async function callLLMWithTemplate(
   config: TemplateEngineConfig,
   path: string,
   variables: Record<string, unknown>,
-  options: LLMOptions = {}
+  options: LLMOptions = {},
 ): Promise<LLMResponse> {
   try {
     // Load the template
@@ -547,19 +549,26 @@ export async function callLLMWithTemplate(
     const parsedTemplate = parseTemplate(templateContent);
 
     // Process the template (handle conditionals)
-    const processedSystemPrompt = processTemplate(parsedTemplate.systemPrompt, variables);
-    const processedUserPrompt = processTemplate(parsedTemplate.userPrompt, variables);
+    const processedSystemPrompt = processTemplate(
+      parsedTemplate.systemPrompt,
+      variables,
+    );
+    const processedUserPrompt = processTemplate(
+      parsedTemplate.userPrompt,
+      variables,
+    );
 
     // Render the template (substitute variables)
-    const renderedSystemPrompt = renderTemplate(processedSystemPrompt, variables);
+    const renderedSystemPrompt = renderTemplate(
+      processedSystemPrompt,
+      variables,
+    );
     const renderedUserPrompt = renderTemplate(processedUserPrompt, variables);
 
     // Call the LLM
     return await callLLM(renderedSystemPrompt, renderedUserPrompt, options);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     return {
       success: false,
@@ -609,7 +618,7 @@ export function createTemplateEngine(config: TemplateEngineConfig) {
     callLLMWithTemplate: (
       path: string,
       variables: Record<string, unknown>,
-      options: LLMOptions = {}
+      options: LLMOptions = {},
     ) => callLLMWithTemplate(config, path, variables, options),
   };
 }
@@ -652,7 +661,10 @@ export class TemplateEngine {
     return parseTemplate(template);
   }
 
-  processTemplate(template: string, variables: Record<string, unknown>): string {
+  processTemplate(
+    template: string,
+    variables: Record<string, unknown>,
+  ): string {
     return processTemplate(template, variables);
   }
 
@@ -667,7 +679,7 @@ export class TemplateEngine {
   callLLM(
     systemPrompt: string,
     userPrompt: string,
-    options: LLMOptions = {}
+    options: LLMOptions = {},
   ): Promise<LLMResponse> {
     return callLLM(systemPrompt, userPrompt, options);
   }
@@ -675,7 +687,7 @@ export class TemplateEngine {
   callLLMWithTemplate(
     path: string,
     variables: Record<string, unknown>,
-    options: LLMOptions = {}
+    options: LLMOptions = {},
   ): Promise<LLMResponse> {
     return callLLMWithTemplate(this.config, path, variables, options);
   }

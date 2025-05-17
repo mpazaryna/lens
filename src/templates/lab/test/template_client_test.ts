@@ -132,7 +132,7 @@ Deno.test({
     const result = await client.reformulateQuery(
       query,
       "Intermediate TypeScript developer interested in server-side development",
-      "programming"
+      "programming",
     );
 
     // We don't know if Ollama is running, so we just check the structure

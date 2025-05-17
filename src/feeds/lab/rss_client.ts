@@ -55,7 +55,7 @@ export interface SaveOptions {
  * @returns A promise that resolves to the raw XML content of the feed
  */
 export const fetchRssFeed = async (
-  options: FetchOptions
+  options: FetchOptions,
 ): Promise<string> => {
   const { url, timeout = 10000 } = options;
 
@@ -67,12 +67,18 @@ export const fetchRssFeed = async (
     clearTimeout(id);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch RSS feed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch RSS feed: ${response.status} ${response.statusText}`,
+      );
     }
 
     return await response.text();
   } catch (error) {
-    throw new Error(`Error fetching RSS feed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error fetching RSS feed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 };
 
@@ -112,7 +118,9 @@ export const parseRssFeed = (xml: string): RssFeed => {
       const itemTitleMatch = itemContent.match(/<title>(.*?)<\/title>/);
       const itemLinkMatch = itemContent.match(/<link>(.*?)<\/link>/);
       const itemPubDateMatch = itemContent.match(/<pubDate>(.*?)<\/pubDate>/);
-      const itemDescMatch = itemContent.match(/<description>([\s\S]*?)<\/description>/);
+      const itemDescMatch = itemContent.match(
+        /<description>([\s\S]*?)<\/description>/,
+      );
       const itemGuidMatch = itemContent.match(/<guid.*?>(.*?)<\/guid>/);
 
       items.push({
@@ -131,7 +139,11 @@ export const parseRssFeed = (xml: string): RssFeed => {
       items,
     };
   } catch (error) {
-    throw new Error(`Error parsing RSS feed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error parsing RSS feed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 };
 
@@ -144,7 +156,7 @@ export const parseRssFeed = (xml: string): RssFeed => {
  */
 export const saveRssFeed = async (
   feed: RssFeed,
-  options: SaveOptions
+  options: SaveOptions,
 ): Promise<void> => {
   const { path, pretty = true } = options;
 
@@ -152,7 +164,11 @@ export const saveRssFeed = async (
     const content = JSON.stringify(feed, null, pretty ? 2 : 0);
     await Deno.writeTextFile(path, content);
   } catch (error) {
-    throw new Error(`Error saving RSS feed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error saving RSS feed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 };
 
@@ -187,10 +203,10 @@ export const ensureDir = async (dir: string): Promise<void> => {
 export const sanitizeFilename = (name: string): string => {
   // Replace invalid filename characters with underscores and convert to lowercase
   return name
-    .replace(/[/\\?%*:|"<>]/g, '_')  // Replace invalid chars with single underscore
-    .replace(/\s+/g, '_')            // Replace spaces with underscores
-    .trim()                          // Trim whitespace
-    .toLowerCase();                  // Convert to lowercase
+    .replace(/[/\\?%*:|"<>]/g, "_") // Replace invalid chars with single underscore
+    .replace(/\s+/g, "_") // Replace spaces with underscores
+    .trim() // Trim whitespace
+    .toLowerCase(); // Convert to lowercase
 };
 
 /**
@@ -202,7 +218,7 @@ export const sanitizeFilename = (name: string): string => {
  */
 export const fetchAndSaveRssFeed = async (
   fetchOptions: FetchOptions,
-  saveOptions: SaveOptions
+  saveOptions: SaveOptions,
 ): Promise<RssFeed> => {
   const xml = await fetchRssFeed(fetchOptions);
   const feed = parseRssFeed(xml);

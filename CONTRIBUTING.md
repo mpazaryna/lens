@@ -61,10 +61,7 @@ To run the test suite:
 
 ```bash
 # Run all tests
-deno test
-
-# Run tests with coverage
-deno test --coverage
+deno task test
 
 # Run specific tests
 deno test path/to/test_file.ts

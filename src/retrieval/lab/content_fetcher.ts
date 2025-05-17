@@ -134,12 +134,13 @@ export function createFilenameFromUrl(url: string): string {
  * @returns The fetched content as a string
  */
 export async function fetchContent(
-  options: FetchOptions
+  options: FetchOptions,
 ): Promise<string> {
   const {
     url,
     timeout = 10000,
-    userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
+    userAgent =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
   } = options;
 
   try {
@@ -149,18 +150,24 @@ export async function fetchContent(
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": userAgent
-      }
+        "User-Agent": userAgent,
+      },
     });
     clearTimeout(id);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch content: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch content: ${response.status} ${response.statusText}`,
+      );
     }
 
     return await response.text();
   } catch (error) {
-    throw new Error(`Error fetching content: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error fetching content: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 
@@ -172,7 +179,7 @@ export async function fetchContent(
  */
 export async function saveContent(
   content: string,
-  options: SaveOptions
+  options: SaveOptions,
 ): Promise<void> {
   const { path, overwrite = false } = options;
 
@@ -196,7 +203,11 @@ export async function saveContent(
     // Write the content to the file
     await Deno.writeTextFile(path, content);
   } catch (error) {
-    throw new Error(`Error saving content: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error saving content: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 
@@ -226,7 +237,7 @@ export async function fetchAndSaveContent(
   options: {
     timeout?: number;
     overwrite?: boolean;
-  } = {}
+  } = {},
 ): Promise<FetchResult> {
   const { timeout = 10000, overwrite = false } = options;
 
@@ -244,13 +255,13 @@ export async function fetchAndSaveContent(
     return {
       url,
       success: true,
-      path: outputPath
+      path: outputPath,
     };
   } catch (error) {
     return {
       url,
       success: false,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
@@ -261,12 +272,18 @@ export async function fetchAndSaveContent(
  * @param jsonPath - Path to the JSON file
  * @returns The parsed JSON data
  */
-export async function loadJsonFile(jsonPath: string): Promise<Record<string, unknown>> {
+export async function loadJsonFile(
+  jsonPath: string,
+): Promise<Record<string, unknown>> {
   try {
     const content = await Deno.readTextFile(jsonPath);
     return JSON.parse(content);
   } catch (error) {
-    throw new Error(`Error loading JSON file: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error loading JSON file: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 
@@ -280,7 +297,9 @@ export function extractUrls(data: Record<string, unknown>): string[] {
   // Check if the data has an 'items' array with 'link' properties
   if (Array.isArray(data.items)) {
     return data.items
-      .filter((item: Record<string, unknown>) => item.link && typeof item.link === 'string')
+      .filter((item: Record<string, unknown>) =>
+        item.link && typeof item.link === "string"
+      )
       .map((item: Record<string, unknown>) => item.link as string);
   }
 
@@ -302,12 +321,12 @@ export async function processBatch(
     concurrency?: number;
     timeout?: number;
     overwrite?: boolean;
-  } = {}
+  } = {},
 ): Promise<FetchResult[]> {
   const {
     concurrency = 2,
     timeout = 10000,
-    overwrite = false
+    overwrite = false,
   } = options;
 
   const results: FetchResult[] = [];
@@ -321,11 +340,16 @@ export async function processBatch(
         const url = queue.shift()!;
         console.log(`Fetching: ${url}`);
 
-        const result = await fetchAndSaveContent(url, outputDir, { timeout, overwrite });
+        const result = await fetchAndSaveContent(url, outputDir, {
+          timeout,
+          overwrite,
+        });
         results.push(result);
 
         if (result.success) {
-          console.log(`✅ Successfully fetched and saved: ${url} -> ${result.path}`);
+          console.log(
+            `✅ Successfully fetched and saved: ${url} -> ${result.path}`,
+          );
         } else {
           console.error(`❌ Failed to fetch: ${url} - ${result.error}`);
         }
@@ -345,14 +369,14 @@ export async function processBatch(
  * @returns The results of the fetch operations
  */
 export async function fetchAllContent(
-  options: ContentFetcherOptions
+  options: ContentFetcherOptions,
 ): Promise<FetchResult[]> {
   const {
     jsonPath,
     outputDir,
     concurrency = 2,
     overwrite = false,
-    timeout = 10000
+    timeout = 10000,
   } = options;
 
   try {
@@ -367,9 +391,17 @@ export async function fetchAllContent(
     console.log(`Found ${urls.length} URLs to fetch`);
 
     // Process the URLs in batches
-    return await processBatch(urls, outputDir, { concurrency, timeout, overwrite });
+    return await processBatch(urls, outputDir, {
+      concurrency,
+      timeout,
+      overwrite,
+    });
   } catch (error) {
-    console.error(`Error fetching content: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(
+      `Error fetching content: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
     return [];
   }
 }
@@ -383,17 +415,19 @@ if (import.meta.main) {
     const outputDir = Deno.args[1] || "./tmp/data/fetched";
     const concurrency = parseInt(Deno.args[2] || "2");
 
-    console.log(`Fetching content from ${jsonPath} to ${outputDir} with concurrency ${concurrency}`);
+    console.log(
+      `Fetching content from ${jsonPath} to ${outputDir} with concurrency ${concurrency}`,
+    );
 
     const results = await fetchAllContent({
       jsonPath,
       outputDir,
       concurrency,
-      overwrite: false
+      overwrite: false,
     });
 
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
+    const successful = results.filter((r) => r.success).length;
+    const failed = results.filter((r) => !r.success).length;
 
     console.log(`\nFetch summary:`);
     console.log(`- Total URLs: ${results.length}`);
@@ -403,11 +437,13 @@ if (import.meta.main) {
     if (failed > 0) {
       console.log(`\nFailed URLs:`);
       results
-        .filter(r => !r.success)
-        .forEach(r => console.log(`- ${r.url}: ${r.error}`));
+        .filter((r) => !r.success)
+        .forEach((r) => console.log(`- ${r.url}: ${r.error}`));
     }
   } catch (error) {
-    console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(
+      `Error: ${error instanceof Error ? error.message : String(error)}`,
+    );
     Deno.exit(1);
   }
 }

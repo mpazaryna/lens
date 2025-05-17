@@ -1,7 +1,7 @@
 // src/config/loader.ts
 import { load } from "@std/dotenv";
 import { join } from "@std/path";
-import { Result, Ok, Err } from "@monads";
+import { Err, Ok, Result } from "@monads";
 import { AppConfig, ConfigError } from "./types.ts";
 import { defaultDataDir } from "./defaults.ts";
 
@@ -16,7 +16,9 @@ export async function loadConfig(): Promise<Result<AppConfig, ConfigError>> {
       dotEnvConfig = await load();
     } catch (error) {
       // .env file doesn't exist or couldn't be read - that's fine
-      console.log("No .env file found, using environment variables and defaults only");
+      console.log(
+        "No .env file found, using environment variables and defaults only",
+      );
     }
 
     // Helper function to get config value with precedence:
@@ -36,12 +38,22 @@ export async function loadConfig(): Promise<Result<AppConfig, ConfigError>> {
     const config: AppConfig = {
       core: {
         dataDir: getValue("LENS_DATA_DIR", defaultDataDir()),
-        logLevel: (getValue("LENS_LOG_LEVEL", "info") as "debug" | "info" | "warn" | "error"),
+        logLevel: (getValue("LENS_LOG_LEVEL", "info") as
+          | "debug"
+          | "info"
+          | "warn"
+          | "error"),
         port: parseInt(getValue("LENS_PORT", "8000")),
       },
       llm: {
-        ollamaBaseUrl: getValue("LENS_OLLAMA_BASE_URL", "http://localhost:11434"),
-        embeddingModel: getValue("LENS_OLLAMA_EMBEDDING_MODEL", "nomic-embed-text"),
+        ollamaBaseUrl: getValue(
+          "LENS_OLLAMA_BASE_URL",
+          "http://localhost:11434",
+        ),
+        embeddingModel: getValue(
+          "LENS_OLLAMA_EMBEDDING_MODEL",
+          "nomic-embed-text",
+        ),
         llmModel: getValue("LENS_OLLAMA_LLM_MODEL", "llama2"),
       },
       langChain: {
@@ -50,7 +62,8 @@ export async function loadConfig(): Promise<Result<AppConfig, ConfigError>> {
       langSmith: {
         apiKey: getValue("LENS_LANGSMITH_API_KEY", ""),
         project: getValue("LENS_LANGSMITH_PROJECT", "lens-development"),
-        tracingEnabled: getValue("LENS_LANGSMITH_TRACING_ENABLED", "true") === "true",
+        tracingEnabled:
+          getValue("LENS_LANGSMITH_TRACING_ENABLED", "true") === "true",
       },
       database: {
         dbPath: getValue("LENS_DB_PATH", join(defaultDataDir(), "lens.db")),
@@ -61,29 +74,35 @@ export async function loadConfig(): Promise<Result<AppConfig, ConfigError>> {
     // Validate the configuration
     return validateConfig(config);
   } catch (error) {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
-    return Err(new ConfigError(`Failed to load configuration: ${errorMessage}`));
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return Err(
+      new ConfigError(`Failed to load configuration: ${errorMessage}`),
+    );
   }
 }
 
 /**
  * Validate the configuration
  */
-export function validateConfig(config: AppConfig): Result<AppConfig, ConfigError> {
+export function validateConfig(
+  config: AppConfig,
+): Result<AppConfig, ConfigError> {
   // Define required values that must be present
   const requiredValues = [
     { name: "LangSmith API Key", value: config.langSmith.apiKey },
   ];
 
-  const missing = requiredValues.filter(item => !item.value || item.value.trim() === "");
+  const missing = requiredValues.filter((item) =>
+    !item.value || item.value.trim() === ""
+  );
 
   if (missing.length > 0) {
-    const missingNames = missing.map(item => item.name).join(", ");
-    return Err(new ConfigError(
-      `Missing required configuration: ${missingNames}. Please check your .env file or environment variables.`
-    ));
+    const missingNames = missing.map((item) => item.name).join(", ");
+    return Err(
+      new ConfigError(
+        `Missing required configuration: ${missingNames}. Please check your .env file or environment variables.`,
+      ),
+    );
   }
 
   return Ok(config);

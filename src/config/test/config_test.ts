@@ -19,7 +19,7 @@ Deno.test("defaultDataDir returns expected path for current OS", () => {
 Deno.test("loadConfig loads values from environment", async () => {
   // Set mock environment variables
   const originalEnv = Deno.env.toObject();
-  
+
   try {
     // Set mock environment
     for (const [key, value] of Object.entries(mockEnv)) {
@@ -39,7 +39,7 @@ Deno.test("loadConfig loads values from environment", async () => {
     for (const key of Object.keys(mockEnv)) {
       Deno.env.delete(key);
     }
-    
+
     // Restore original environment
     for (const [key, value] of Object.entries(originalEnv)) {
       Deno.env.set(key, value);

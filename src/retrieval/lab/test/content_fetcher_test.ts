@@ -7,7 +7,10 @@
  * The tests use mocks to avoid making actual network requests during testing.
  */
 
-import { assertEquals, assertExists } from "https://deno.land/std@0.224.0/assert/mod.ts";
+import {
+  assertEquals,
+  assertExists,
+} from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
   createFilenameFromUrl,
   extractUrls,
@@ -73,21 +76,45 @@ Deno.test("sanitizeFilename - should sanitize filenames correctly", () => {
   assertEquals(sanitizeFilename("test:file.txt"), "test_file.txt");
   assertEquals(sanitizeFilename("test*file.txt"), "test_file.txt");
   assertEquals(sanitizeFilename("test|file.txt"), "test_file.txt");
-  assertEquals(sanitizeFilename("test\"file.txt"), "test_file.txt");
+  assertEquals(sanitizeFilename('test"file.txt'), "test_file.txt");
   assertEquals(sanitizeFilename("test<file.txt"), "test_file.txt");
   assertEquals(sanitizeFilename("test>file.txt"), "test_file.txt");
   assertEquals(sanitizeFilename("TEST FILE.TXT"), "test_file.txt");
 });
 
 Deno.test("createFilenameFromUrl - should create filenames from URLs correctly", () => {
-  assertEquals(createFilenameFromUrl("https://example.com/article"), "article.html");
-  assertEquals(createFilenameFromUrl("https://example.com/article/"), "article.html");
-  assertEquals(createFilenameFromUrl("https://example.com/path/to/article"), "article.html");
-  assertEquals(createFilenameFromUrl("https://example.com"), "example.com.html");
-  assertEquals(createFilenameFromUrl("https://example.com/article?param=value"), "article.html");
-  assertEquals(createFilenameFromUrl("https://example.com/article#section"), "article.html");
-  assertEquals(createFilenameFromUrl("https://example.com/article-with-dashes"), "article-with-dashes.html");
-  assertEquals(createFilenameFromUrl("https://example.com/article_with_underscores"), "article_with_underscores.html");
+  assertEquals(
+    createFilenameFromUrl("https://example.com/article"),
+    "article.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com/article/"),
+    "article.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com/path/to/article"),
+    "article.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com"),
+    "example.com.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com/article?param=value"),
+    "article.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com/article#section"),
+    "article.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com/article-with-dashes"),
+    "article-with-dashes.html",
+  );
+  assertEquals(
+    createFilenameFromUrl("https://example.com/article_with_underscores"),
+    "article_with_underscores.html",
+  );
 });
 
 Deno.test("fetchContent - should fetch content successfully", async () => {
@@ -114,7 +141,7 @@ Deno.test("fetchContent - should handle fetch errors", async () => {
     assertExists(error);
     assertEquals(
       (error as Error).message.includes("Failed to fetch content: 404"),
-      true
+      true,
     );
   } finally {
     restoreFetch();
