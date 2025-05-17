@@ -27,8 +27,11 @@ Lens is a next-generation feed aggregator that uses local AI models to intellige
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/lens.git
+git clone https://github.com/mpazaryna/lens.git
 cd lens
+
+# Update environment variables in .env file
+cp .env.example .env
 
 # Run the tests
 deno task test

@@ -7,37 +7,19 @@ Thank you for your interest in contributing to Lens! This document provides guid
 - [Contributing to Lens](#contributing-to-lens)
   - [Table of Contents](#table-of-contents)
   - [Code of Conduct](#code-of-conduct)
-  - [Getting Started](#getting-started)
   - [Development Workflow](#development-workflow)
   - [Testing Requirements](#testing-requirements)
   - [Pull Request Process](#pull-request-process)
   - [Coding Standards](#coding-standards)
+    - [Labs and Experimental Code](#labs-and-experimental-code)
+    - [Programming Paradigm](#programming-paradigm)
+    - [General Standards](#general-standards)
   - [Documentation](#documentation)
   - [Community](#community)
 
 ## Code of Conduct
 
 By participating in this project, you agree to maintain a respectful and inclusive environment for everyone. Please be kind and constructive in your communications.
-
-## Getting Started
-
-1. **Fork the repository** on GitHub
-2. **Clone your fork** locally:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/lens.git
-   cd lens
-   ```
-3. **Set up the development environment**:
-   ```bash
-   # Install Deno if you haven't already
-   # https://deno.land/#installation
-
-   # Install Ollama if you haven't already
-   # https://ollama.ai/download
-
-   # Run the setup script
-   deno run --allow-all setup.ts
-   ```
 
 ## Development Workflow
 
