@@ -147,7 +147,7 @@ Deno.test({
       // Process the HTML file with LangSmith tracing disabled
       const result = await processHtmlFile({
         inputPath: "./test-input.html",
-        outputDir: "./test-output",
+        outputDir: "./tmp/data/processed",
         // Use a small temperature for more deterministic results
         temperature: 0.1,
         // Explicitly disable LangSmith tracing for tests

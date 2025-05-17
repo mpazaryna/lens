@@ -30,60 +30,8 @@ Lens is a next-generation feed aggregator that uses local AI models to intellige
 git clone https://github.com/yourusername/lens.git
 cd lens
 
-# Run the setup script
-deno run --allow-all setup.ts
-```
-
-### Basic Usage
-
-```bash
-# Add a new feed source
-lens add https://example.com/feed.xml
-
-# Fetch latest content
-lens fetch
-
-# List recommended content
-lens list
-
-# Ask a natural language query
-lens query "what tech videos came in this week"
-```
-
-## Command Reference
-
-### Configuration Commands
-```
-add <url> [--type=video|article|mixed]    # Add new feed source
-remove <source-id>                        # Remove feed source
-configure topics                           # Manage topic preferences
-```
-
-### Content Retrieval Commands
-```
-fetch                                      # Update all feeds
-fetch <source-id>                          # Update specific feed
-```
-
-### Content Discovery Commands
-```
-list [--limit=10]                          # Show top recommended content
-videos [--topic=<topic>]                   # List video content only
-articles [--topic=<topic>]                 # List article content only
-topic <topic>                              # List content for specific topic
-recent [--days=7]                          # Show recent content
-```
-
-### Content Interaction Commands
-```
-read <id>                                  # View content details
-open <id>                                  # Open in browser
-feedback <id> [--score=1|-1]               # Provide explicit feedback
-```
-
-### Natural Language Interface
-```
-query "what tech videos came in this week" # Natural language query
+# Run the tests
+deno task test
 ```
 
 ## Architecture
