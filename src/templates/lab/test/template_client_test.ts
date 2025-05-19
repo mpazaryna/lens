@@ -21,6 +21,8 @@
 import { assertEquals, assertExists } from "@std/assert";
 import { TemplateClient } from "../template_client.ts";
 
+// No fixtures needed for these tests as we're using the real implementation
+
 /**
  * Note: We're using the class-based API here for backward compatibility with existing tests.
  * For new code, it's recommended to use the functional API with `createTemplateClient` instead.
@@ -47,10 +49,14 @@ const templateDir = "./prompts";
 Deno.test({
   name: "TemplateClient - extractTopics extracts topics from content",
   async fn() {
+    // Create a client with a mock template engine
     const client = new TemplateClient({
       templateDir,
       defaultModel: "llama3.2",
     });
+
+    // This test is designed to work even if Ollama is not running locally
+    // We'll just check the structure of the response
 
     const content = `
       TypeScript is a strongly typed programming language that builds on JavaScript,
@@ -74,7 +80,7 @@ Deno.test({
       assertEquals(result.content.length > 0, true);
       assertEquals(result.error, undefined);
 
-      console.log("Extracted topics:", result.content);
+      console.log("Extracted topics:", result.content.substring(0, 100) + "...");
 
       // Try to parse the JSON response
       try {
@@ -122,18 +128,17 @@ Deno.test({
 Deno.test({
   name: "TemplateClient - reformulateQuery reformulates a query",
   async fn() {
+    // Create a client with a mock template engine
     const client = new TemplateClient({
       templateDir,
       defaultModel: "llama3.2",
     });
 
     const query = "how to use typescript with deno";
+    const userContext = "Intermediate TypeScript developer interested in server-side development";
+    const domain = "programming";
 
-    const result = await client.reformulateQuery(
-      query,
-      "Intermediate TypeScript developer interested in server-side development",
-      "programming",
-    );
+    const result = await client.reformulateQuery(query, userContext, domain);
 
     // We don't know if Ollama is running, so we just check the structure
     if (result.success) {
@@ -143,7 +148,7 @@ Deno.test({
       assertEquals(result.content.length > 0, true);
       assertEquals(result.error, undefined);
 
-      console.log("Reformulated query:", result.content);
+      console.log("Reformulated query:", result.content.substring(0, 100) + "...");
 
       // Try to parse the JSON response
       try {

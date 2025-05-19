@@ -336,25 +336,122 @@ export async function processHtmlFile(
 // Example Usage
 // ============================================================================
 
+/**
+ * Process all HTML files in a directory
+ *
+ * @param inputDir Directory containing HTML files to process
+ * @param outputDir Directory to save processed files to
+ * @param options Additional processing options
+ * @returns Summary of processing results
+ */
+export async function processHtmlDirectory(
+  inputDir: string,
+  outputDir: string,
+  options: SummaryOptions = {},
+): Promise<{
+  totalFiles: number;
+  successCount: number;
+  failureCount: number;
+  results: Array<{ file: string; success: boolean; error?: string }>;
+}> {
+  try {
+    // Ensure directories exist
+    await ensureDir(inputDir);
+    await ensureDir(outputDir);
+
+    // Get all HTML files in the input directory
+    const files: string[] = [];
+    for await (const entry of Deno.readDir(inputDir)) {
+      if (entry.isFile && (entry.name.endsWith(".html") || entry.name.endsWith(".htm"))) {
+        files.push(entry.name);
+      }
+    }
+
+    console.log(`Found ${files.length} HTML files in ${inputDir}`);
+
+    // Process each file
+    const results = [];
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (const file of files) {
+      const inputPath = join(inputDir, file);
+      console.log(`Processing ${inputPath}...`);
+
+      try {
+        const result = await processHtmlFile({
+          inputPath,
+          outputDir,
+          ...options,
+        });
+
+        if (result.success) {
+          successCount++;
+          results.push({ file, success: true });
+          console.log(`✅ Successfully processed ${file}`);
+        } else {
+          failureCount++;
+          results.push({ file, success: false, error: result.error });
+          console.error(`❌ Failed to process ${file}: ${result.error}`);
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        failureCount++;
+        results.push({ file, success: false, error: errorMessage });
+        console.error(`❌ Error processing ${file}: ${errorMessage}`);
+      }
+    }
+
+    return {
+      totalFiles: files.length,
+      successCount,
+      failureCount,
+      results,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to process HTML directory: ${errorMessage}`);
+  }
+}
+
 // Example usage when run directly
 if (import.meta.main) {
   console.log("HTML Content Summarizer");
 
   try {
-    // Process the specified HTML file with LangSmith tracing enabled
-    const result = await processHtmlFile({
-      inputPath: "./tmp/data/fetched/on-reading-novels.html",
-      outputDir: "./tmp/data/processed",
-      modelName: "llama3.2",
-      temperature: 0.5,
-      langSmithTracing: true, // Enable LangSmith tracing using config values
-    });
+    // Load configuration to get data directory
+    const config = await getConfig();
+    const dataDir = config.core.dataDir;
 
-    if (result.success) {
-      console.log("✅ Successfully processed HTML file");
-      console.log("Summary:", result.content);
-    } else {
-      console.error("❌ Failed to process HTML file:", result.error);
+    // Use the data directory from configuration
+    const inputDir = join(dataDir, "fetched");
+    const outputDir = join(dataDir, "processed");
+
+    console.log(`Using data directory: ${dataDir}`);
+    console.log(`Input directory: ${inputDir}`);
+    console.log(`Output directory: ${outputDir}`);
+
+    // Process all HTML files in the fetched directory
+    const summary = await processHtmlDirectory(
+      inputDir,
+      outputDir,
+      {
+        modelName: config.llm.llmModel, // Use model from config
+        temperature: 0.5,
+        langSmithTracing: config.langSmith.tracingEnabled, // Use tracing setting from config
+      }
+    );
+
+    console.log("\nProcessing Summary:");
+    console.log(`Total files: ${summary.totalFiles}`);
+    console.log(`Successfully processed: ${summary.successCount}`);
+    console.log(`Failed to process: ${summary.failureCount}`);
+
+    if (summary.failureCount > 0) {
+      console.log("\nFailed files:");
+      summary.results
+        .filter(r => !r.success)
+        .forEach(r => console.log(`- ${r.file}: ${r.error}`));
     }
   } catch (error) {
     console.error(
