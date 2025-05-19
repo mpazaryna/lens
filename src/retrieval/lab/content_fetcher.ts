@@ -411,17 +411,61 @@ export async function fetchAllContent(
  */
 if (import.meta.main) {
   try {
-    const jsonPath = Deno.args[0] || "./tmp/data/austin_kleon.json";
-    const outputDir = Deno.args[1] || "./tmp/data/fetched";
-    const concurrency = parseInt(Deno.args[2] || "2");
+    // Get the feed name from command line or use default
+    const feedName = Deno.args[0] || "austin_kleon"; // Default feed name
+    const concurrency = parseInt(Deno.args[1] || "2");
 
+    // Check for LENS_DATA_DIR environment variable
+    const lensDataDir = Deno.env.get("LENS_DATA_DIR");
+
+    // Exit if LENS_DATA_DIR is not set
+    if (!lensDataDir) {
+      console.error("Error: LENS_DATA_DIR environment variable is not set");
+      Deno.exit(1);
+    }
+
+    console.log(`Using LENS_DATA_DIR environment variable: ${lensDataDir}`);
+    const baseDir = lensDataDir;
+
+    // Create directories within the data directory
+    const feedsDir = join(baseDir, "feeds");
+    const fetchedDir = join(baseDir, "fetched");
+
+    // Ensure directories exist
+    await ensureDir(feedsDir);
+    await ensureDir(fetchedDir);
+
+    // Construct the path to the feed JSON file
+    let jsonPath = join(feedsDir, `${feedName}.json`);
+
+    // Check if the feed file exists
+    try {
+      await Deno.stat(jsonPath);
+    } catch (error) {
+      if (error instanceof Deno.errors.NotFound) {
+        // Try the paz namespace path
+        const pazJsonPath = join(feedsDir, "paz", `${feedName}.json`);
+
+        try {
+          await Deno.stat(pazJsonPath);
+          console.log(`Feed file not found at ${jsonPath}, using ${pazJsonPath} instead`);
+          jsonPath = pazJsonPath;
+        } catch (_innerError) {
+          // If the file doesn't exist in either location, warn the user
+          console.warn(`Feed file not found at ${jsonPath} or ${pazJsonPath}`);
+          // Continue with the original path (will fail later)
+        }
+      }
+    }
+
+    console.log(`Processing content from data directory: ${baseDir}`);
     console.log(
-      `Fetching content from ${jsonPath} to ${outputDir} with concurrency ${concurrency}`,
+      `Fetching content from ${jsonPath} to ${fetchedDir} with concurrency ${concurrency}`,
     );
 
     const results = await fetchAllContent({
       jsonPath,
-      outputDir,
+      outputDir: fetchedDir,
       concurrency,
       overwrite: false,
     });

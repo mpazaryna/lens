@@ -20,6 +20,11 @@
 import { assertEquals, assertExists, assertStringIncludes } from "@std/assert";
 import { TemplateEngine } from "../template_engine.ts";
 
+// Import test fixtures
+import {
+  SIMPLE_TEMPLATE
+} from "./fixtures/fixtures.ts";
+
 // Use the prompts directory
 const templateDir = "./prompts";
 
@@ -30,7 +35,7 @@ const templateDir = "./prompts";
  * all sections from a markdown template, including the name, description,
  * input variables, system prompt, user prompt, and output format.
  *
- * It creates a sample template with all sections and checks that each
+ * It uses a sample template with all sections and checks that each
  * section is correctly extracted and stored in the TemplateContent object.
  */
 Deno.test({
@@ -38,33 +43,15 @@ Deno.test({
   fn() {
     const engine = new TemplateEngine(templateDir);
 
-    const template = `# Template: Test Template
+    const parsed = engine.parseTemplate(SIMPLE_TEMPLATE);
 
-## Description
-This is a test template.
-
-## Input Variables
-- var1: First variable
-- var2: Second variable
-
-## System Prompt
-System prompt content.
-
-## User Prompt
-User prompt with {{var1}} and {{var2}}.
-
-## Output Format
-Expected output format.`;
-
-    const parsed = engine.parseTemplate(template);
-
-    assertEquals(parsed.name, "Test Template");
-    assertEquals(parsed.description, "This is a test template.");
-    assertEquals(parsed.inputVariables.var1, "First variable");
-    assertEquals(parsed.inputVariables.var2, "Second variable");
-    assertEquals(parsed.systemPrompt, "System prompt content.");
-    assertEquals(parsed.userPrompt, "User prompt with {{var1}} and {{var2}}.");
-    assertEquals(parsed.outputFormat, "Expected output format.");
+    assertEquals(parsed.name, "Simple Test Template");
+    assertEquals(parsed.description, "This is a simple test template for unit testing.");
+    assertEquals(parsed.inputVariables.name, "The name of the person");
+    assertEquals(parsed.inputVariables.age, "The age of the person");
+    assertEquals(parsed.systemPrompt, "You are a helpful assistant providing information about {{name}}.");
+    assertEquals(parsed.userPrompt, "Tell me about a person named {{name}} who is {{age}} years old.");
+    assertEquals(parsed.outputFormat, "A short paragraph about {{name}}.");
   },
 });
 
@@ -83,6 +70,7 @@ Deno.test({
   fn() {
     const engine = new TemplateEngine(templateDir);
 
+    // Use a simpler template for testing conditionals
     const template = `
     {% if condition1 %}
     This should be included.
@@ -110,6 +98,7 @@ Deno.test({
 
     const processed = engine.processTemplate(template, variables);
 
+    // Check that the correct content is included
     assertStringIncludes(processed, "This should be included.");
     assertStringIncludes(processed, "JSON format.");
     assertEquals(processed.includes("This should not be included."), false);
@@ -133,6 +122,7 @@ Deno.test({
   fn() {
     const engine = new TemplateEngine(templateDir);
 
+    // Use a simpler template for testing variable substitution
     const template = `
     Hello, {{name}}!
 
@@ -148,12 +138,22 @@ Deno.test({
 
     const rendered = engine.renderTemplate(template, variables);
 
+    // Check that variables are substituted correctly
     assertStringIncludes(rendered, "Hello, John!");
-    assertStringIncludes(
-      rendered,
-      "Your age is 30 and your favorite color is blue.",
-    );
+    assertStringIncludes(rendered, "Your age is 30 and your favorite color is blue.");
     assertStringIncludes(rendered, "{{missing}} should remain as is.");
+
+    // The current implementation doesn't automatically stringify objects
+    // So we'll test with primitive values only
+    const templateWithNumber = `Count: {{count}}`;
+    const numberVariables = {
+      count: 42
+    };
+
+    const renderedWithNumber = engine.renderTemplate(templateWithNumber, numberVariables);
+
+    // Check that numbers are converted to strings
+    assertStringIncludes(renderedWithNumber, 'Count: 42');
   },
 });
 
@@ -172,6 +172,9 @@ Deno.test({
 Deno.test({
   name: "TemplateEngine - callLLM sends prompts to LLM",
   async fn() {
+    // This test is designed to work even if Ollama is not running locally
+    // We'll just check the structure of the response
+
     const engine = new TemplateEngine(templateDir);
 
     const systemPrompt = "You are a helpful assistant.";

@@ -9,6 +9,9 @@
  * @version 0.1.0
  */
 
+import { join } from "https://deno.land/std@0.224.0/path/mod.ts";
+import { getConfig } from "../../config/mod.ts";
+
 /**
  * Represents an RSS feed item
  */
@@ -231,11 +234,18 @@ export const fetchAndSaveRssFeed = async (
  */
 if (import.meta.main) {
   try {
+    // Get the feed URL from command line or use default
     const url = Deno.args[0] || "https://austinkleon.com/feed";
-    const dataDir = "./tmp/data";
 
-    // Ensure the data directory exists
-    await ensureDir(dataDir);
+    // Get the configuration
+    const config = await getConfig();
+    const baseDir = config.core.dataDir;
+
+    // Create directory within the data directory
+    const feedsDir = join(baseDir, "feeds");
+
+    // Ensure the directory exists
+    await ensureDir(feedsDir);
 
     console.log(`Fetching RSS feed from ${url}...`);
 
@@ -246,7 +256,7 @@ if (import.meta.main) {
     // Create a filename based on the feed title
     const feedTitle = feed.title || "unnamed_feed";
     const sanitizedTitle = sanitizeFilename(feedTitle);
-    const outputPath = `${dataDir}/${sanitizedTitle}.json`;
+    const outputPath = join(feedsDir, `${sanitizedTitle}.json`);
 
     // Save the feed
     await saveRssFeed(feed, { path: outputPath });
