@@ -33,9 +33,33 @@ cd lens
 # Update environment variables in .env file
 cp .env.example .env
 
+# Optional: Use sample data for development
+# Set LENS_DATA_DIR in .env to point to the samples directory:
+# LENS_DATA_DIR=/path/to/lens/docs/samples
+
 # Run the tests
 deno task test
 ```
+
+## Sample Data
+
+The project includes sample data in the `docs/samples/` directory that demonstrates the complete data flow through the Lens system. This sample data serves multiple purposes:
+
+- **Documentation**: Illustrates how data is structured and transformed at each stage of processing
+- **Development**: Provides real-world examples for testing and developing new features
+- **Onboarding**: Helps new developers understand the system without setting up their own data environment
+- **Reference**: Shows expected input/output formats for each component
+
+The sample data includes:
+
+- **OPML Files**: Feed subscription lists in OPML format (`docs/samples/opml/`)
+- **RSS Feeds**: Parsed feed content in JSON format (`docs/samples/feeds/`)
+- **Fetched Content**: HTML content from feed items (`docs/samples/fetched/`)
+- **Processed Content**: AI-generated summaries and metadata (`docs/samples/processed/`)
+
+The samples feature real, accessible content from Austin Kleon's blog, allowing developers to see the complete journey from feed subscription to processed content with actual working endpoints.
+
+For detailed information on the sample data structure and how to use it in development, see the [Sample Data Guide](docs/samples/README.md).
 
 ## Architecture
 
