@@ -45,11 +45,11 @@ To set up your own data directory:
    - `processed/` - For processed content and summaries
 3. Run the OPML processor to populate your feeds directory:
    ```bash
-   deno run --allow-net --allow-read --allow-write src/feeds/lab/opml_feed_processor.ts path/to/your/opml/file.opml
+   deno run --allow-net --allow-read --allow-write src/feeds/lab/opml_feed_processor.ts 
    ```
 4. Run the content fetcher to download HTML content:
    ```bash
-   deno run --allow-net --allow-read --allow-write src/retrieval/lab/content_fetcher.ts
+   deno run --allow-net --allow-read --allow-write --allow-env --env src/retrieval/lab/content_fetcher.ts
    ```
 5. Run the HTML summarizer to process the content:
    ```bash
