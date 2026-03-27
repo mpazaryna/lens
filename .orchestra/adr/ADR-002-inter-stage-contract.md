@@ -21,7 +21,7 @@ The existing codebase already uses filesystem handoffs. This ADR formalizes that
 
 - **Debuggability.** When something goes wrong, every intermediate result is on disk. You can inspect fetched HTML, extracted text, and summaries independently without re-running the pipeline.
 - **Recovery.** If the pipeline crashes mid-summarization, extraction output is still on disk. The state tracker can resume from the last completed stage per item without reprocessing.
-- **Horizontal scaling.** Multiple machines can share a data directory (NFS, S3-backed FUSE, etc.) and process different items. In-memory passing locks you to a single process.
+- **Vertical scaling.** Multiple async workers on a single machine process different items concurrently. In-memory passing locks you to a single orchestrator thread.
 - **Composability.** Stages can be run independently via the CLI (`lens extract` already works this way). Adding a new stage doesn't require touching the orchestrator's data flow.
 - **Simplicity.** The filesystem is the message queue. No need for Redis, Celery, or in-process pub/sub.
 
@@ -30,6 +30,42 @@ The existing codebase already uses filesystem handoffs. This ADR formalizes that
 - **I/O overhead.** Writing and reading files is slower than passing Python objects. For the expected volume (hundreds of feed items, not millions), this is negligible compared to network and LLM latency.
 - **Serialization cost.** Data must be serializable to JSON. This is already true of the frozen dataclasses used throughout.
 - **Disk usage.** Intermediate files accumulate. Mitigated by the state tracker marking items as done and a future cleanup policy.
+
+## Scaling: Vertical vs. Horizontal
+
+### Vertical scaling (single machine, multiple workers)
+
+Filesystem handoffs work well here. A single machine runs multiple async workers via the orchestrator's semaphore-based concurrency. All workers share a local filesystem with reliable POSIX file locking. `state.json` with advisory locks is sufficient because there's no network in the path.
+
+This is the current model and it handles small-scale multi-tenant use (up to ~10 concurrent users) without issues.
+
+### Horizontal scaling (multiple instances)
+
+Filesystem handoffs break down as soon as you run multiple instances, even in the 1-10 user range. The problems:
+
+1. **Work claiming.** Two instances poll the same feed queue and both try to summarize the same article. Without a coordination mechanism, work is duplicated or corrupted.
+2. **Shared state.** `state.json` with advisory file locks does not work reliably across machines. NFS advisory locks are notoriously inconsistent across implementations and can silently fail.
+3. **Output conflicts.** Two instances writing to the same directory on a network filesystem is a race condition, even with append-only semantics.
+
+**Horizontal scaling requires upgrading the state tracker** to a shared backend with atomic work claiming, even at small user counts:
+
+| Instances | State backend | Work coordination |
+|-----------|--------------|-------------------|
+| 1 | `state.json` (local) | Not needed |
+| 2-5 | SQLite on shared disk, or Redis | Atomic status transitions (claim-before-process) |
+| 5+ | Postgres or Redis | Distributed locks or queue-based work distribution |
+
+Stage output can remain on a shared filesystem (each instance writes uniquely-named files), but the state tracker is the coordination point and must support atomic claims: "set this item to `processing` only if it's currently `new`."
+
+### Migration path
+
+1. **State tracker:** `state.json` -> SQLite/Redis (horizontal) -> Postgres (SaaS). The state lifecycle (ADR-006) stays the same; only the storage backend changes.
+2. **Inter-stage transport:** filesystem directories -> message queue (Redis Streams, SQS) at SaaS scale. Stage contract (input -> process -> output) stays the same.
+3. **Data storage:** local filesystem -> object storage (S3, GCS) at SaaS scale.
+
+The key insight: the stage interface is stable. Stages consume input and produce output. Only the transport, coordination, and storage layers change. Design stages to accept an input source and output sink, not hardcoded paths, and the migration is mechanical.
+
+**Revisit this ADR when:** a second instance is deployed, or file lock contention appears in run logs.
 
 ## Consequences
 

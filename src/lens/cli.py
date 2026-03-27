@@ -75,7 +75,7 @@ def extract() -> None:
     """Run only the extraction phase (HTML -> clean text, no LLM)."""
     config = load_config()
 
-    from lens.extraction import extract_articles
+    from lens.collect.extractor import extract_articles
 
     results = extract_articles(
         config.fetched_dir,

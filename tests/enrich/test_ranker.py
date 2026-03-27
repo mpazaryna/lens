@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from lens.providers.base import LLMResponse, ToolCall
-from lens.ranking.ranker import RankingResult, rank_article, rank_batch
+from lens.enrich.ranker import RankingResult, rank_article, rank_batch
 
 
 def _make_mock_provider(score: float = 8.5, confidence: float = 0.9) -> AsyncMock:

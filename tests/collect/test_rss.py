@@ -2,7 +2,7 @@
 
 import pytest
 
-from lens.feeds.rss import Feed, FeedItem, parse_feed
+from lens.collect.rss import Feed, FeedItem, parse_feed
 
 
 SAMPLE_RSS = """<?xml version="1.0" encoding="UTF-8"?>

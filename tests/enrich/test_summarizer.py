@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from lens.processing.summarizer import SummaryResult, summarize_article
+from lens.enrich.summarizer import SummaryResult, summarize_article
 from lens.providers.base import LLMResponse
 
 

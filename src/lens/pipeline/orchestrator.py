@@ -1,7 +1,8 @@
 """Pipeline orchestration functions.
 
 Coordinates the full feed processing pipeline:
-feeds -> fetch -> extract -> summarize -> rank
+Collection: feeds -> fetch -> extract
+Enrichment: summarize -> rank
 
 Each phase is a pure function with explicit inputs and outputs.
 """
@@ -15,13 +16,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from lens.config import Config
-from lens.extraction import extract_articles
-from lens.feeds.opml import parse_opml
-from lens.feeds.rss import fetch_feeds, Feed, FeedItem
-from lens.processing.summarizer import summarize_batch
+from lens.collect.extractor import extract_articles
+from lens.collect.opml import parse_opml
+from lens.collect.rss import fetch_feeds, Feed, FeedItem
+from lens.collect.fetcher import fetch_articles
+from lens.enrich.summarizer import summarize_batch
+from lens.enrich.ranker import rank_batch
 from lens.providers import LLMProvider
-from lens.ranking.ranker import rank_batch
-from lens.retrieval.fetcher import fetch_articles
 
 
 @dataclass
