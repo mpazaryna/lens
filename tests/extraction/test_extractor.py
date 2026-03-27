@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from lens_py.extraction.extractor import extract_article, extract_articles
+from lens.extraction.extractor import extract_article, extract_articles
 
 
 class TestExtractArticle:

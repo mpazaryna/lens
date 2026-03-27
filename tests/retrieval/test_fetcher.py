@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from lens_py.retrieval.fetcher import _url_to_filename
+from lens.retrieval.fetcher import _url_to_filename
 
 
 class TestUrlToFilename:

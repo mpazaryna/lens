@@ -20,10 +20,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/lens_py"]
+packages = ["src/lens"]
 
 [project.scripts]
-lens = "lens_py.cli:main"
+lens = "lens.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -38,7 +38,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-source = ["src/lens_py"]
+source = ["src/lens"]
 omit = ["tests/*"]
 
 [tool.coverage.report]

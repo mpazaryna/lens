@@ -13,13 +13,13 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from lens_py.config import Config
-from lens_py.extraction import extract_articles
-from lens_py.feeds.opml import parse_opml
-from lens_py.feeds.rss import fetch_feeds, Feed
-from lens_py.processing.summarizer import summarize_batch
-from lens_py.ranking.ranker import rank_batch
-from lens_py.retrieval.fetcher import fetch_articles
+from lens.config import Config
+from lens.extraction import extract_articles
+from lens.feeds.opml import parse_opml
+from lens.feeds.rss import fetch_feeds, Feed
+from lens.processing.summarizer import summarize_batch
+from lens.ranking.ranker import rank_batch
+from lens.retrieval.fetcher import fetch_articles
 
 
 @dataclass
@@ -228,7 +228,7 @@ class PipelineAgent:
         result: PipelineResult,
     ) -> list:
         """Parse OPML files and fetch all feeds."""
-        from lens_py.feeds.rss import FeedItem
+        from lens.feeds.rss import FeedItem
 
         opml_files = sorted(self.config.opml_dir.glob("*.opml"))
         if not opml_files:

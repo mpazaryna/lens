@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from lens_py.agents.pipeline import SeenLedger
+from lens.agents.pipeline import SeenLedger
 
 
 class TestSeenLedger:

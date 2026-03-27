@@ -6,8 +6,8 @@ import asyncio
 
 import click
 
-from lens_py.agents.pipeline import PipelineAgent
-from lens_py.config import load_config
+from lens.agents.pipeline import PipelineAgent
+from lens.config import load_config
 
 
 @click.group()
@@ -63,7 +63,7 @@ def extract() -> None:
     """Run only the extraction phase (HTML -> clean text, no LLM)."""
     config = load_config()
 
-    from lens_py.extraction import extract_articles
+    from lens.extraction import extract_articles
 
     results = extract_articles(
         config.fetched_dir,

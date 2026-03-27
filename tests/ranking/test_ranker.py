@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from lens_py.ranking.ranker import RankingResult, rank_article, rank_batch
+from lens.ranking.ranker import RankingResult, rank_article, rank_batch
 
 
 def _make_tool_use_response(score: float, confidence: float) -> MagicMock:
@@ -35,7 +35,7 @@ class TestRankArticle:
             return_value=_make_tool_use_response(8.5, 0.9)
         )
 
-        with patch("lens_py.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
             result = await rank_article(
                 title="Test Article",
                 summary="A great article about AI",
@@ -56,7 +56,7 @@ class TestRankArticle:
             return_value=_make_tool_use_response(7.0, 0.8)
         )
 
-        with patch("lens_py.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
             await rank_article(
                 title="Test", summary="Test", source="test.md", api_key="test-key"
             )
@@ -69,7 +69,7 @@ class TestRankArticle:
         mock_client = AsyncMock()
         mock_client.messages.create = AsyncMock(side_effect=Exception("Rate limited"))
 
-        with patch("lens_py.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
             result = await rank_article(
                 title="Test", summary="Test", source="test.md", api_key="test-key"
             )
@@ -86,7 +86,7 @@ class TestRankArticle:
         mock_client = AsyncMock()
         mock_client.messages.create = AsyncMock(return_value=mock_message)
 
-        with patch("lens_py.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
             result = await rank_article(
                 title="Test", summary="Test", source="test.md", api_key="test-key"
             )
@@ -119,7 +119,7 @@ class TestRankBatch:
             for i in range(3)
         ]
 
-        with patch("lens_py.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
             results = await rank_batch(articles, api_key="test-key")
 
         assert len(results) == 3
@@ -139,7 +139,7 @@ class TestRankBatch:
             for i in range(3)
         ]
 
-        with patch("lens_py.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.ranking.ranker.anthropic.AsyncAnthropic", return_value=mock_client):
             results = await rank_batch(articles, api_key="test-key")
 
         scores = [r.score for r in results]

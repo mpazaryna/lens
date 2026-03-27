@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from lens_py.processing.summarizer import SummaryResult, summarize_article
+from lens.processing.summarizer import SummaryResult, summarize_article
 
 
 @pytest.mark.asyncio
@@ -18,7 +18,7 @@ class TestSummarizeArticle:
         mock_client = AsyncMock()
         mock_client.messages.create = AsyncMock(return_value=mock_message)
 
-        with patch("lens_py.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
             result = await summarize_article(
                 text="Some article text",
                 source="test.md",
@@ -35,7 +35,7 @@ class TestSummarizeArticle:
         mock_client = AsyncMock()
         mock_client.messages.create = AsyncMock(side_effect=Exception("API error"))
 
-        with patch("lens_py.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
             result = await summarize_article(
                 text="Some text",
                 source="test.md",
@@ -55,7 +55,7 @@ class TestSummarizeArticle:
 
         long_text = "word " * 100000  # Very long text
 
-        with patch("lens_py.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
+        with patch("lens.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
             await summarize_article(
                 text=long_text,
                 source="test.md",
