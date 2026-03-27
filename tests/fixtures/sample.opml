@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Test Feeds</title>
+  </head>
+  <body>
+    <outline text="Technology" title="Technology">
+      <outline type="rss" text="Anthropic News" title="Anthropic News"
+               xmlUrl="https://www.anthropic.com/rss.xml"
+               htmlUrl="https://www.anthropic.com/news"/>
+    </outline>
+    <outline text="Science" title="Science">
+      <outline type="rss" text="NASA Breaking" title="NASA Breaking"
+               xmlUrl="https://www.nasa.gov/rss/dyn/breaking_news.rss"
+               htmlUrl="https://www.nasa.gov/news"/>
+    </outline>
+  </body>
+</opml>

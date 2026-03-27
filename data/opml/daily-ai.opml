@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>Daily AI Review</title>
+</head>
+<body>
+<outline title="AI News" text="AI News">
+  <outline type="rss" title="Anthropic News" htmlUrl="https://www.anthropic.com/news" text="Anthropic News" xmlUrl="https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml" />
+</outline>
+</body>
+</opml>
