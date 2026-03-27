@@ -5,6 +5,7 @@
 ## Success Criteria
 
 - [ ] Full pipeline runs end-to-end via `lens run` with any configured provider
+- [ ] Each LLM stage (summarization, ranking, etc.) can be configured with a different provider/model (e.g., Haiku for summarization, Sonnet for ranking)
 - [ ] Each stage (feeds, retrieval, extraction, summarization) has unit tests with >80% coverage
 - [ ] E2E integration test exercises all stages (feeds through summarization) against real RSS feeds
 - [ ] Retrieval stage has proper async fetch tests (currently only URL conversion is tested)
@@ -47,6 +48,11 @@ Part of the [Lens Roadmap](../../roadmap.md).
 
 - ADR-000: [The Score](../../adr/ADR-000-the-score.md)
 - ADR-001: [Prefer Functions Over Classes](../../adr/ADR-001-prefer-functions-over-classes.md)
+- ADR-002: [Inter-Stage Contract](../../adr/ADR-002-inter-stage-contract.md)
+- ADR-003: [Data Directory Layout](../../adr/ADR-003-data-directory-layout.md)
+- ADR-004: [Per-Stage Provider Configuration](../../adr/ADR-004-per-stage-provider-config.md)
+- ADR-005: [Observability Stack](../../adr/ADR-005-observability-stack.md)
+- ADR-006: [Feed State Tracker and Recovery Model](../../adr/ADR-006-feed-state-tracker.md)
 
 ## ADRs Required
 
@@ -56,5 +62,6 @@ These ADRs are a prerequisite gate -- no Not Started items should be implemented
 
 1. **ADR-002: Inter-stage contract** -- filesystem handoffs vs. in-memory. This is foundational: the orchestrator, state tracker, recovery model, and data directory layout all depend on this decision. Must be resolved first.
 2. **ADR-003: Data directory layout** -- `~/.lens` structure, config resolution, OPML default path (`~/.lens/feeds.opml`). Depends on ADR-002 (if stages use filesystem, the directory layout is load-bearing).
-3. **ADR-004: Observability stack** -- stdlib `logging`, JSON in production, human-readable in dev. What metadata per LLM call (tokens, latency, model, prompt hash)? Can proceed in parallel with ADR-005.
-4. **ADR-005: Feed state tracker and recovery model** -- this component carries the most complexity (five states, cross-run persistence, retry semantics, per-item timing). Needs its own ADR to nail down the data model and failure semantics before implementation.
+3. **ADR-004: Per-stage provider configuration** -- each LLM stage should be independently configurable with its own provider/model. How does config express this (e.g., `LENS_SUMMARIZE_MODEL=haiku`, `LENS_RANK_MODEL=sonnet`)? How does the registry resolve per-stage vs. default provider? Can proceed in parallel with ADR-005/006.
+4. **ADR-005: Observability stack** -- stdlib `logging`, JSON in production, human-readable in dev. What metadata per LLM call (tokens, latency, model, prompt hash)? Can proceed in parallel with ADR-004/006.
+5. **ADR-006: Feed state tracker and recovery model** -- this component carries the most complexity (five states, cross-run persistence, retry semantics, per-item timing). Needs its own ADR to nail down the data model and failure semantics before implementation.
