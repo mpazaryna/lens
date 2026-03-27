@@ -18,6 +18,7 @@ from lens.extraction import extract_articles
 from lens.feeds.opml import parse_opml
 from lens.feeds.rss import fetch_feeds, Feed
 from lens.processing.summarizer import summarize_batch
+from lens.providers import LLMProvider, create_provider
 from lens.ranking.ranker import rank_batch
 from lens.retrieval.fetcher import fetch_articles
 
@@ -78,6 +79,12 @@ class PipelineAgent:
 
     def __init__(self, config: Config) -> None:
         self.config = config
+        self.provider: LLMProvider = create_provider(
+            provider=config.provider,
+            model=config.model,
+            api_key=config.api_key,
+            base_url=config.base_url,
+        )
 
     async def run(
         self,
@@ -154,8 +161,7 @@ class PipelineAgent:
         if articles_to_summarize:
             summaries = await summarize_batch(
                 articles_to_summarize,
-                api_key=self.config.anthropic_api_key,
-                model=self.config.model,
+                provider=self.provider,
                 concurrency=concurrency,
             )
 
@@ -186,8 +192,7 @@ class PipelineAgent:
         if articles_to_rank:
             rankings = await rank_batch(
                 articles_to_rank,
-                api_key=self.config.anthropic_api_key,
-                model=self.config.model,
+                provider=self.provider,
                 concurrency=concurrency,
             )
 

@@ -1,10 +1,19 @@
 """Tests for article summarizer."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
 from lens.processing.summarizer import SummaryResult, summarize_article
+from lens.providers.base import LLMResponse
+
+
+def _make_mock_provider(text: str = "This is a summary.") -> AsyncMock:
+    """Create a mock LLM provider."""
+    provider = AsyncMock()
+    provider.model_name = "test-model"
+    provider.complete = AsyncMock(return_value=LLMResponse(text=text, model="test-model"))
+    return provider
 
 
 @pytest.mark.asyncio
@@ -12,62 +21,56 @@ class TestSummarizeArticle:
     """Tests for summarize_article function."""
 
     async def test_returns_summary_on_success(self) -> None:
-        mock_message = MagicMock()
-        mock_message.content = [MagicMock(text="This is a summary.")]
-
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_message)
-
-        with patch("lens.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
-            result = await summarize_article(
-                text="Some article text",
-                source="test.md",
-                api_key="test-key",
-            )
+        provider = _make_mock_provider("This is a summary.")
+        result = await summarize_article(
+            text="Some article text",
+            source="test.md",
+            provider=provider,
+        )
 
         assert result.success is True
         assert result.summary == "This is a summary."
         assert result.source == "test.md"
+        assert result.model == "test-model"
         assert result.processing_time_ms is not None
         assert result.processing_time_ms >= 0
 
-    async def test_returns_error_on_api_failure(self) -> None:
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(side_effect=Exception("API error"))
+    async def test_returns_error_on_provider_failure(self) -> None:
+        provider = AsyncMock()
+        provider.model_name = "test-model"
+        provider.complete = AsyncMock(side_effect=Exception("API error"))
 
-        with patch("lens.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
-            result = await summarize_article(
-                text="Some text",
-                source="test.md",
-                api_key="test-key",
-            )
+        result = await summarize_article(
+            text="Some text",
+            source="test.md",
+            provider=provider,
+        )
 
         assert result.success is False
         assert "API error" in result.error
         assert result.summary is None
 
     async def test_truncates_long_text(self) -> None:
-        mock_message = MagicMock()
-        mock_message.content = [MagicMock(text="Summary")]
+        provider = _make_mock_provider("Summary")
+        long_text = "word " * 100000
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_message)
+        await summarize_article(
+            text=long_text,
+            source="test.md",
+            provider=provider,
+        )
 
-        long_text = "word " * 100000  # Very long text
-
-        with patch("lens.processing.summarizer.anthropic.AsyncAnthropic", return_value=mock_client):
-            await summarize_article(
-                text=long_text,
-                source="test.md",
-                api_key="test-key",
-            )
-
-        # Verify the text was truncated in the API call
-        call_args = mock_client.messages.create.call_args
-        content = call_args.kwargs["messages"][0]["content"]
-        assert len(content) < len(long_text)
+        # Verify the text was truncated in the provider call
+        call_args = provider.complete.call_args
+        prompt = call_args.kwargs["prompt"]
+        assert len(prompt) < len(long_text)
 
     async def test_result_is_frozen(self) -> None:
         result = SummaryResult(success=True, source="test.md", summary="test")
         with pytest.raises(AttributeError):
             result.summary = "modified"  # type: ignore[misc]
+
+    async def test_calls_provider_complete(self) -> None:
+        provider = _make_mock_provider()
+        await summarize_article(text="text", source="src", provider=provider)
+        provider.complete.assert_awaited_once()

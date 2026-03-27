@@ -13,8 +13,10 @@ class Config(BaseModel):
     """Immutable application configuration."""
 
     data_dir: Path
-    anthropic_api_key: str
+    provider: str
+    api_key: str
     model: str
+    base_url: str | None
     log_level: str
 
     @property
@@ -55,7 +57,9 @@ def load_config(env_path: Path | None = None) -> Config:
 
     return Config(
         data_dir=Path(os.getenv("LENS_DATA_DIR", "data")),
-        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
+        provider=os.getenv("LENS_PROVIDER", "anthropic"),
+        api_key=os.getenv("LENS_API_KEY", os.getenv("ANTHROPIC_API_KEY", "")),
         model=os.getenv("LENS_MODEL", "claude-sonnet-4-20250514"),
+        base_url=os.getenv("LENS_BASE_URL"),
         log_level=os.getenv("LENS_LOG_LEVEL", "info"),
     )

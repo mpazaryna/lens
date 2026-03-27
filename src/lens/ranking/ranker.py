@@ -1,13 +1,12 @@
-"""Article ranking using Anthropic API with structured tool use."""
+"""Article ranking using any LLM provider with structured tool use."""
 
 from __future__ import annotations
 
 import asyncio
-import json
 import time
 from dataclasses import dataclass, field
 
-import anthropic
+from lens.providers.base import LLMProvider
 
 
 @dataclass(frozen=True)
@@ -25,7 +24,7 @@ class RankingResult:
     error: str | None = None
 
 
-# Tool definition for structured scoring output
+# Tool definition for structured scoring output (Anthropic format, converted per-provider)
 SCORE_TOOL = {
     "name": "score_article",
     "description": "Score an article's relevance and quality on a 0-10 scale.",
@@ -71,42 +70,32 @@ async def rank_article(
     title: str,
     summary: str,
     source: str,
-    api_key: str,
-    model: str = "claude-sonnet-4-20250514",
+    provider: LLMProvider,
 ) -> RankingResult:
-    """Rank a single article using Anthropic API tool use.
+    """Rank a single article using structured tool use.
 
     Args:
         title: Article title.
         summary: Article summary text.
         source: Source identifier.
-        api_key: Anthropic API key.
-        model: Model to use.
+        provider: LLM provider to use.
 
     Returns:
         RankingResult with structured score.
     """
-    client = anthropic.AsyncAnthropic(api_key=api_key)
-
     start = time.monotonic()
     try:
-        message = await client.messages.create(
-            model=model,
-            max_tokens=512,
+        response = await provider.complete_with_tools(
+            prompt=RANKING_PROMPT.format(title=title, summary=summary),
             tools=[SCORE_TOOL],
             tool_choice={"type": "tool", "name": "score_article"},
-            messages=[
-                {
-                    "role": "user",
-                    "content": RANKING_PROMPT.format(title=title, summary=summary),
-                }
-            ],
+            max_tokens=512,
         )
 
-        # Extract tool use result
-        for block in message.content:
-            if block.type == "tool_use" and block.name == "score_article":
-                data = block.input
+        # Look for the tool call in the response
+        for tc in response.tool_calls:
+            if tc.name == "score_article":
+                data = tc.arguments
                 return RankingResult(
                     success=True,
                     source=source,
@@ -135,17 +124,15 @@ async def rank_article(
 
 async def rank_batch(
     articles: list[dict],
-    api_key: str,
-    model: str = "claude-sonnet-4-20250514",
+    provider: LLMProvider,
     concurrency: int = 5,
 ) -> list[RankingResult]:
     """Rank multiple articles concurrently.
 
     Args:
         articles: List of dicts with 'title', 'summary', 'source' keys.
-        api_key: Anthropic API key.
-        model: Model to use.
-        concurrency: Max concurrent API calls.
+        provider: LLM provider to use.
+        concurrency: Max concurrent calls.
 
     Returns:
         List of RankingResult sorted by score descending.
@@ -158,12 +145,10 @@ async def rank_batch(
                 title=article["title"],
                 summary=article["summary"],
                 source=article["source"],
-                api_key=api_key,
-                model=model,
+                provider=provider,
             )
 
     tasks = [_rank_one(a) for a in articles]
     results = list(await asyncio.gather(*tasks))
 
-    # Sort by score descending
     return sorted(results, key=lambda r: r.score, reverse=True)

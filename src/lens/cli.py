@@ -25,13 +25,17 @@ def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) 
     """Run the full pipeline: feeds -> fetch -> extract -> summarize -> rank."""
     config = load_config()
 
-    if not config.anthropic_api_key:
-        click.echo("Error: ANTHROPIC_API_KEY not set. See .env.example", err=True)
+    if config.provider != "ollama" and not config.api_key:
+        click.echo(
+            f"Error: LENS_API_KEY not set (required for {config.provider}). See .env.example",
+            err=True,
+        )
         raise SystemExit(1)
 
-    click.echo("Lens-py Pipeline")
-    click.echo("================")
+    click.echo("Lens Pipeline")
+    click.echo("=============")
     click.echo(f"Data directory: {config.data_dir}")
+    click.echo(f"Provider: {config.provider}")
     click.echo(f"Model: {config.model}")
     click.echo("")
 
