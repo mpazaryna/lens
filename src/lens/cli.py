@@ -6,8 +6,9 @@ import asyncio
 
 import click
 
-from lens.agents.pipeline import PipelineAgent
+from lens.agents.pipeline import run_pipeline
 from lens.config import load_config
+from lens.providers import create_provider
 
 
 @click.group()
@@ -39,8 +40,15 @@ def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) 
     click.echo(f"Model: {config.model}")
     click.echo("")
 
-    agent = PipelineAgent(config)
-    result = asyncio.run(agent.run(
+    provider = create_provider(
+        provider=config.provider,
+        model=config.model,
+        api_key=config.api_key,
+        base_url=config.base_url,
+    )
+    result = asyncio.run(run_pipeline(
+        config=config,
+        provider=provider,
         concurrency=concurrency,
         overwrite=overwrite,
         category_filter=category,

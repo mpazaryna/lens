@@ -1,70 +1,71 @@
-"""Tests for pipeline agent."""
+"""Tests for pipeline functions."""
 
 import json
 from pathlib import Path
 
 import pytest
 
-from lens.agents.pipeline import SeenLedger
+from lens.agents.pipeline import (
+    filter_new_urls,
+    load_seen,
+    mark_seen,
+    save_seen,
+)
 
 
 class TestSeenLedger:
-    """Tests for the seen articles ledger."""
+    """Tests for seen ledger functions."""
 
-    def test_empty_ledger(self) -> None:
-        ledger = SeenLedger()
-        assert not ledger.is_seen("https://example.com/article")
+    def test_load_nonexistent_returns_empty(self, tmp_path: Path) -> None:
+        ledger = load_seen(tmp_path / "nonexistent.json")
+        assert ledger == {}
 
-    def test_mark_and_check_seen(self) -> None:
-        ledger = SeenLedger()
-        ledger.mark_seen("https://example.com/article", "Test Article")
-        assert ledger.is_seen("https://example.com/article")
+    def test_save_and_load_roundtrip(self, tmp_path: Path) -> None:
+        path = tmp_path / "seen.json"
+        ledger = {"https://example.com/a": {"processedAt": "2026-01-01", "title": "A"}}
+        save_seen(path, ledger)
 
-    def test_filter_new_urls(self) -> None:
-        ledger = SeenLedger()
-        ledger.mark_seen("https://example.com/old")
+        loaded = load_seen(path)
+        assert loaded == ledger
 
+    def test_save_creates_parent_dirs(self, tmp_path: Path) -> None:
+        path = tmp_path / "deep" / "nested" / "seen.json"
+        save_seen(path, {"https://example.com": {}})
+        assert path.exists()
+
+    def test_filter_new_urls_removes_seen(self) -> None:
+        seen = {"https://example.com/old": {"processedAt": "2026-01-01"}}
         urls = [
             "https://example.com/old",
             "https://example.com/new-1",
             "https://example.com/new-2",
         ]
-        new = ledger.filter_new(urls)
+        new = filter_new_urls(urls, seen)
         assert len(new) == 2
         assert "https://example.com/old" not in new
 
-    def test_save_and_load(self, tmp_path: Path) -> None:
-        path = tmp_path / "seen.json"
+    def test_filter_new_urls_empty_ledger(self) -> None:
+        urls = ["https://example.com/a", "https://example.com/b"]
+        new = filter_new_urls(urls, {})
+        assert new == urls
 
-        # Save
-        ledger = SeenLedger()
-        ledger.mark_seen("https://example.com/article", "Test")
-        ledger.save(path)
+    def test_mark_seen_adds_entries(self) -> None:
+        ledger: dict[str, dict] = {}
+        title_map = {"https://example.com/a": "Article A"}
+        updated = mark_seen(ledger, ["https://example.com/a"], title_map)
 
-        # Load
-        loaded = SeenLedger.load(path)
-        assert loaded.is_seen("https://example.com/article")
+        assert "https://example.com/a" in updated
+        assert updated["https://example.com/a"]["title"] == "Article A"
+        assert "processedAt" in updated["https://example.com/a"]
 
-    def test_load_nonexistent_returns_empty(self, tmp_path: Path) -> None:
-        ledger = SeenLedger.load(tmp_path / "nonexistent.json")
-        assert not ledger.is_seen("https://example.com/anything")
+    def test_mark_seen_preserves_existing(self) -> None:
+        ledger = {"https://example.com/old": {"processedAt": "2026-01-01", "title": "Old"}}
+        updated = mark_seen(ledger, ["https://example.com/new"], {"https://example.com/new": "New"})
 
-    def test_save_creates_parent_dirs(self, tmp_path: Path) -> None:
-        path = tmp_path / "deep" / "nested" / "seen.json"
-        ledger = SeenLedger()
-        ledger.mark_seen("https://example.com/article")
-        ledger.save(path)
-        assert path.exists()
+        assert "https://example.com/old" in updated
+        assert "https://example.com/new" in updated
 
-    def test_mark_seen_records_timestamp(self) -> None:
-        ledger = SeenLedger()
-        ledger.mark_seen("https://example.com/article", "Test")
-        entry = ledger.entries["https://example.com/article"]
-        assert "processedAt" in entry
-        assert "T" in entry["processedAt"]  # ISO format
-
-    def test_mark_seen_records_title(self) -> None:
-        ledger = SeenLedger()
-        ledger.mark_seen("https://example.com/article", "My Title")
-        entry = ledger.entries["https://example.com/article"]
-        assert entry["title"] == "My Title"
+    def test_mark_seen_does_not_mutate_original(self) -> None:
+        ledger: dict[str, dict] = {}
+        mark_seen(ledger, ["https://example.com/a"], {})
+        assert ledger == {}  # Original unchanged
