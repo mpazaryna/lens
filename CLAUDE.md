@@ -70,3 +70,7 @@ Environment variables via `.env` file. See `.env.example` for required variables
 ## Code Style Guidelines
 
 **No Emojis**: Do not use emojis in code, console output, or documentation.
+
+## Project Tracking
+
+- **ClickUp**: https://app.clickup.com/9017822495/v/li/901712328513
