@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from lens.agents.pipeline import (
+from lens.pipeline.orchestrator import (
     filter_new_urls,
     load_seen,
     mark_seen,

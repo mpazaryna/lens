@@ -6,7 +6,7 @@ import asyncio
 
 import click
 
-from lens.agents.pipeline import run_pipeline
+from lens.pipeline import run_pipeline
 from lens.config import load_config
 from lens.providers import create_provider
 
