@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from lens.providers.base import LLMProvider
+if TYPE_CHECKING:
+    from lens.providers.base import LLMProvider
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -96,6 +101,8 @@ async def rank_article(
         for tc in response.tool_calls:
             if tc.name == "score_article":
                 data = tc.arguments
+                elapsed = (time.monotonic() - start) * 1000
+                logger.debug("Ranked '%s' -> %.1f in %.0fms", title, data["score"], elapsed)
                 return RankingResult(
                     success=True,
                     source=source,
@@ -114,6 +121,7 @@ async def rank_article(
             error="No tool use response from model",
         )
     except Exception as e:
+        logger.warning("Ranking failed for '%s': %s", title, e)
         return RankingResult(
             success=False,
             source=source,

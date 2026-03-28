@@ -46,14 +46,16 @@ class OllamaProvider:
             },
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(
                 f"{self.base_url}/api/generate",
                 json=payload,
                 timeout=aiohttp.ClientTimeout(total=120),
-            ) as resp:
-                resp.raise_for_status()
-                data = await resp.json()
+            ) as resp,
+        ):
+            resp.raise_for_status()
+            data = await resp.json()
 
         return LLMResponse(
             text=data.get("response", ""),
@@ -88,7 +90,8 @@ class OllamaProvider:
         schema_desc = "Respond with a JSON object containing these fields:\n"
         for prop_name, prop_info in properties.items():
             req = " (required)" if prop_name in required else ""
-            schema_desc += f'  - "{prop_name}": {prop_info.get("description", prop_info.get("type", ""))}{req}\n'
+            desc = prop_info.get("description", prop_info.get("type", ""))
+            schema_desc += f'  - "{prop_name}": {desc}{req}\n'
 
         full_prompt = f"""{prompt}
 
@@ -106,14 +109,16 @@ Respond ONLY with valid JSON, no other text."""
             },
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(
                 f"{self.base_url}/api/generate",
                 json=payload,
                 timeout=aiohttp.ClientTimeout(total=120),
-            ) as resp:
-                resp.raise_for_status()
-                data = await resp.json()
+            ) as resp,
+        ):
+            resp.raise_for_status()
+            data = await resp.json()
 
         raw_text = data.get("response", "")
 

@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from dataclasses import dataclass, field
 
 import aiohttp
 import feedparser
+
+from lens.errors import FeedFetchError, FeedParseError
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -46,8 +51,8 @@ async def fetch_feed(
         Parsed Feed object.
 
     Raises:
-        aiohttp.ClientError: On network errors.
-        ValueError: On parse errors.
+        FeedFetchError: On network errors.
+        FeedParseError: On parse errors.
     """
     own_session = session is None
     if own_session:
@@ -57,6 +62,8 @@ async def fetch_feed(
         async with session.get(url, timeout=aiohttp.ClientTimeout(total=timeout)) as resp:
             resp.raise_for_status()
             xml_content = await resp.text()
+    except aiohttp.ClientError as e:
+        raise FeedFetchError(f"Failed to fetch feed {url}: {e}") from e
     finally:
         if own_session:
             await session.close()
@@ -69,7 +76,7 @@ def parse_feed(xml_content: str) -> Feed:
     parsed = feedparser.parse(xml_content)
 
     if parsed.bozo and not parsed.entries:
-        raise ValueError(f"Failed to parse feed: {parsed.bozo_exception}")
+        raise FeedParseError(f"Failed to parse feed: {parsed.bozo_exception}")
 
     feed_info = parsed.feed
     items = [
@@ -114,11 +121,12 @@ async def fetch_feeds(
             try:
                 feed = await fetch_feed(url, timeout=timeout, session=session)
                 results.append((url, feed))
-            except Exception as e:
+            except (FeedFetchError, FeedParseError) as e:
+                logger.warning("Feed failed: %s: %s", url, e)
                 results.append((url, e))
 
-    async with aiohttp.ClientSession() as session:
-        tasks = [_fetch_one(url, session) for url in urls]
-        await asyncio.gather(*tasks)
+    async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
+        for url in urls:
+            tg.create_task(_fetch_one(url, session))
 
     return results

@@ -7,7 +7,7 @@ by setting a custom base_url.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from lens.providers.base import LLMResponse, ToolCall
 

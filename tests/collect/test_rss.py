@@ -2,8 +2,8 @@
 
 import pytest
 
-from lens.collect.rss import Feed, FeedItem, parse_feed
-
+from lens.collect.rss import parse_feed
+from lens.errors import FeedParseError
 
 SAMPLE_RSS = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -87,7 +87,7 @@ class TestParseFeed:
             feed.items[0].title = "modified"  # type: ignore[misc]
 
     def test_invalid_xml_raises(self) -> None:
-        with pytest.raises(ValueError, match="Failed to parse"):
+        with pytest.raises(FeedParseError, match="Failed to parse"):
             parse_feed("this is not xml at all")
 
     def test_empty_feed(self) -> None:

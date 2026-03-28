@@ -142,9 +142,7 @@ class TestExtractArticles:
         html_dir.mkdir()
         out_dir.mkdir()
 
-        (html_dir / "test.html").write_text(
-            "<html><body><h1>New</h1><p>Updated</p></body></html>"
-        )
+        (html_dir / "test.html").write_text("<html><body><h1>New</h1><p>Updated</p></body></html>")
         (out_dir / "test.md").write_text("# Old content")
 
         extract_articles(html_dir, out_dir, overwrite=True)

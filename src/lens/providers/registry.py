@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from lens.providers.base import LLMProvider
+from typing import TYPE_CHECKING
+
+from lens.errors import ConfigError
+
+if TYPE_CHECKING:
+    from lens.providers.base import LLMProvider
 
 
 def create_provider(
@@ -23,7 +28,7 @@ def create_provider(
         An LLMProvider instance.
 
     Raises:
-        ValueError: If the provider name is not recognized.
+        ConfigError: If the provider name is not recognized.
     """
     match provider.lower():
         case "anthropic":
@@ -45,7 +50,6 @@ def create_provider(
             )
 
         case _:
-            raise ValueError(
-                f"Unknown provider: '{provider}'. "
-                f"Supported: anthropic, openai, ollama"
+            raise ConfigError(
+                f"Unknown provider: '{provider}'. Supported: anthropic, openai, ollama"
             )

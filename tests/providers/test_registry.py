@@ -2,17 +2,20 @@
 
 import pytest
 
-from lens.providers.registry import create_provider
+from lens.errors import ConfigError
 from lens.providers.anthropic import AnthropicProvider
-from lens.providers.openai import OpenAIProvider
 from lens.providers.ollama import OllamaProvider
+from lens.providers.openai import OpenAIProvider
+from lens.providers.registry import create_provider
 
 
 class TestCreateProvider:
     """Tests for create_provider factory."""
 
     def test_creates_anthropic_provider(self) -> None:
-        provider = create_provider("anthropic", model="claude-sonnet-4-20250514", api_key="test-key")
+        provider = create_provider(
+            "anthropic", model="claude-sonnet-4-20250514", api_key="test-key"
+        )
         assert isinstance(provider, AnthropicProvider)
         assert provider.model_name == "claude-sonnet-4-20250514"
 
@@ -48,9 +51,9 @@ class TestCreateProvider:
         assert isinstance(provider, AnthropicProvider)
 
     def test_unknown_provider_raises(self) -> None:
-        with pytest.raises(ValueError, match="Unknown provider"):
+        with pytest.raises(ConfigError, match="Unknown provider"):
             create_provider("unknown", model="model")
 
     def test_unknown_provider_lists_supported(self) -> None:
-        with pytest.raises(ValueError, match="anthropic, openai, ollama"):
+        with pytest.raises(ConfigError, match="anthropic, openai, ollama"):
             create_provider("gemini", model="model")

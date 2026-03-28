@@ -10,19 +10,25 @@ Each phase is a pure function with explicit inputs and outputs.
 from __future__ import annotations
 
 import json
+import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from lens.config import Config
-from lens.collect.extractor import extract_articles
-from lens.collect.opml import parse_opml
-from lens.collect.rss import fetch_feeds, Feed, FeedItem
+from lens.collect.extractor import ExtractionResultItem, extract_articles
 from lens.collect.fetcher import fetch_articles
-from lens.enrich.summarizer import summarize_batch
+from lens.collect.opml import parse_opml
+from lens.collect.rss import Feed, FeedItem, fetch_feeds
 from lens.enrich.ranker import rank_batch
-from lens.providers import LLMProvider
+from lens.enrich.summarizer import SummaryResult, summarize_batch
+
+if TYPE_CHECKING:
+    from lens.config import Config
+    from lens.providers import LLMProvider
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -65,7 +71,7 @@ def mark_seen(
     title_map: dict[str, str],
 ) -> dict[str, dict]:
     """Return a new ledger with the given URLs marked as seen."""
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     updated = {**ledger}
     for url in urls:
         updated[url] = {"processedAt": now, "title": title_map.get(url, "")}
@@ -96,7 +102,7 @@ async def fetch_feed_items(
         return []
 
     result.feeds_found = len(all_feed_sources)
-    print(f"   Found {len(all_feed_sources)} feeds in {len(opml_files)} OPML file(s)")
+    logger.info("Found %d feeds in %d OPML file(s)", len(all_feed_sources), len(opml_files))
 
     urls = [s.xml_url for s in all_feed_sources]
     feed_results = await fetch_feeds(urls, concurrency=5)
@@ -132,7 +138,7 @@ async def fetch_feed_items(
             }
             feed_path.write_text(json.dumps(feed_data, indent=2))
 
-    print(f"   {len(all_items)} total items across all feeds")
+    logger.info("%d total items across all feeds", len(all_items))
     return all_items
 
 
@@ -160,16 +166,14 @@ def extract_content(
     config: Config,
     result: PipelineResult,
     overwrite: bool = False,
-) -> list[tuple[Path, object]]:
+) -> list[ExtractionResultItem]:
     """Phase 3: Extract HTML to clean text (no LLM)."""
     extract_results = extract_articles(
         config.fetched_dir,
         config.extracted_dir,
         overwrite=overwrite,
     )
-    result.articles_extracted = sum(
-        1 for _, r in extract_results if not isinstance(r, Exception)
-    )
+    result.articles_extracted = sum(1 for _, r in extract_results if not isinstance(r, Exception))
     for path, r in extract_results:
         if isinstance(r, Exception):
             result.errors.append(f"Extract failed: {path}: {r}")
@@ -177,12 +181,12 @@ def extract_content(
 
 
 async def summarize_content(
-    extract_results: list[tuple[Path, object]],
+    extract_results: list[ExtractionResultItem],
     config: Config,
     provider: LLMProvider,
     result: PipelineResult,
     concurrency: int = 5,
-) -> list:
+) -> list[SummaryResult]:
     """Phase 4: Summarize extracted articles via LLM."""
     articles_to_summarize = []
     for path, r in extract_results:
@@ -216,7 +220,7 @@ async def summarize_content(
 
 
 async def rank_content(
-    summaries: list,
+    summaries: list[SummaryResult],
     config: Config,
     provider: LLMProvider,
     result: PipelineResult,
@@ -289,7 +293,7 @@ async def run_pipeline(
     seen = load_seen(config.seen_path)
 
     # Phase 1: Parse OPML and fetch feeds
-    print("Phase 1: Fetching feeds...")
+    logger.info("Phase 1: Fetching feeds...")
     feed_items = await fetch_feed_items(config, category_filter, result)
 
     if not feed_items:
@@ -299,26 +303,26 @@ async def run_pipeline(
     # Phase 2: Filter new items and fetch HTML
     urls = [item.link for item in feed_items if item.link]
     new_urls = filter_new_urls(urls, seen)
-    print(f"   {len(new_urls)} new, {len(urls) - len(new_urls)} already processed")
+    logger.info("%d new, %d already processed", len(new_urls), len(urls) - len(new_urls))
 
     if not new_urls:
-        print("No new articles to process.")
+        logger.info("No new articles to process.")
         result.elapsed_seconds = time.monotonic() - start
         return result
 
-    print(f"\nPhase 2: Fetching {len(new_urls)} articles...")
+    logger.info("Phase 2: Fetching %d articles...", len(new_urls))
     await fetch_html(new_urls, config, result, concurrency, overwrite)
 
     # Phase 3: Extract HTML to clean text
-    print("\nPhase 3: Extracting content...")
+    logger.info("Phase 3: Extracting content...")
     extract_results = extract_content(config, result, overwrite)
 
     # Phase 4: Summarize
-    print(f"\nPhase 4: Summarizing {result.articles_extracted} articles...")
+    logger.info("Phase 4: Summarizing %d articles...", result.articles_extracted)
     summaries = await summarize_content(extract_results, config, provider, result, concurrency)
 
     # Phase 5: Rank
-    print(f"\nPhase 5: Ranking {result.articles_summarized} articles...")
+    logger.info("Phase 5: Ranking %d articles...", result.articles_summarized)
     await rank_content(summaries, config, provider, result, concurrency)
 
     # Update seen ledger

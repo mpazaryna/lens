@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from lens.providers.base import LLMResponse, ToolCall
 from lens.enrich.ranker import RankingResult, rank_article, rank_batch
+from lens.providers.base import LLMResponse, ToolCall
 
 
 def _make_mock_provider(score: float = 8.5, confidence: float = 0.9) -> AsyncMock:
@@ -54,9 +54,7 @@ class TestRankArticle:
 
     async def test_passes_tool_definition(self) -> None:
         provider = _make_mock_provider()
-        await rank_article(
-            title="Test", summary="Test", source="test.md", provider=provider
-        )
+        await rank_article(title="Test", summary="Test", source="test.md", provider=provider)
 
         call_kwargs = provider.complete_with_tools.call_args.kwargs
         assert call_kwargs["tool_choice"] == {"type": "tool", "name": "score_article"}

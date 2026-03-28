@@ -1,11 +1,16 @@
 """Tests for pipeline functions."""
 
-import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
+from lens.collect.rss import Feed, FeedItem
+from lens.config import Config
 from lens.pipeline.orchestrator import (
+    PipelineResult,
+    extract_content,
+    fetch_feed_items,
     filter_new_urls,
     load_seen,
     mark_seen,
@@ -69,3 +74,111 @@ class TestSeenLedger:
         ledger: dict[str, dict] = {}
         mark_seen(ledger, ["https://example.com/a"], {})
         assert ledger == {}  # Original unchanged
+
+
+class TestExtractContent:
+    """Tests for the extract_content orchestrator phase."""
+
+    def test_extracts_html_files(self, tmp_data_dir: Path) -> None:
+        config = Config(
+            data_dir=tmp_data_dir,
+            provider="anthropic",
+            api_key="test",
+            model="test",
+            base_url=None,
+            log_level="info",
+        )
+        # Write HTML files
+        (tmp_data_dir / "fetched" / "article.html").write_text(
+            "<html><body><h1>Test</h1><p>Content here</p></body></html>"
+        )
+
+        result = PipelineResult()
+        extract_results = extract_content(config, result)
+
+        assert result.articles_extracted == 1
+        assert len(extract_results) == 1
+        assert not isinstance(extract_results[0][1], Exception)
+
+    def test_counts_extraction_errors(self, tmp_data_dir: Path) -> None:
+        config = Config(
+            data_dir=tmp_data_dir,
+            provider="anthropic",
+            api_key="test",
+            model="test",
+            base_url=None,
+            log_level="info",
+        )
+        # Empty dir = no files to extract
+        result = PipelineResult()
+        extract_results = extract_content(config, result)
+
+        assert result.articles_extracted == 0
+        assert len(extract_results) == 0
+
+
+@pytest.mark.asyncio
+class TestFetchFeedItems:
+    """Tests for the fetch_feed_items orchestrator phase."""
+
+    async def test_returns_empty_on_no_opml(self, tmp_data_dir: Path) -> None:
+        config = Config(
+            data_dir=tmp_data_dir,
+            provider="anthropic",
+            api_key="test",
+            model="test",
+            base_url=None,
+            log_level="info",
+        )
+        result = PipelineResult()
+        items = await fetch_feed_items(config, None, result)
+
+        assert items == []
+        assert len(result.errors) == 1
+        assert "No OPML" in result.errors[0]
+
+    async def test_parses_opml_and_fetches(self, tmp_data_dir: Path) -> None:
+        config = Config(
+            data_dir=tmp_data_dir,
+            provider="anthropic",
+            api_key="test",
+            model="test",
+            base_url=None,
+            log_level="info",
+        )
+        # Write a minimal OPML
+        opml = """<?xml version="1.0"?>
+        <opml version="2.0">
+          <body>
+            <outline text="Tech" title="Tech">
+              <outline type="rss" text="Test" title="Test"
+                       xmlUrl="https://example.com/feed.xml"
+                       htmlUrl="https://example.com"/>
+            </outline>
+          </body>
+        </opml>"""
+        (tmp_data_dir / "opml" / "test.opml").write_text(opml)
+
+        feed = Feed(
+            title="Test",
+            link="https://example.com",
+            description="",
+            items=[
+                FeedItem(
+                    title="Article 1",
+                    link="https://example.com/a1",
+                    description="Desc",
+                    pub_date="2026-03-27",
+                    guid="a1",
+                ),
+            ],
+        )
+
+        with patch("lens.pipeline.orchestrator.fetch_feeds") as mock_fetch:
+            mock_fetch.return_value = [("https://example.com/feed.xml", feed)]
+            result = PipelineResult()
+            items = await fetch_feed_items(config, None, result)
+
+        assert result.feeds_found == 1
+        assert len(items) == 1
+        assert items[0].title == "Article 1"

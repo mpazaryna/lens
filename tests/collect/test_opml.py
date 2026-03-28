@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from lens.collect.opml import OpmlFeed, parse_opml
+from lens.collect.opml import parse_opml
 
 
 class TestParseOpml:

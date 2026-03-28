@@ -3,12 +3,24 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 
 import click
 
-from lens.pipeline import run_pipeline
 from lens.config import load_config
+from lens.errors import ConfigError
+from lens.pipeline import run_pipeline
 from lens.providers import create_provider
+
+
+def _configure_logging(level_name: str) -> None:
+    """Configure the root lens logger from a level name."""
+    level = getattr(logging, level_name.upper(), logging.INFO)
+    logging.basicConfig(
+        level=level,
+        format="%(levelname)s %(name)s: %(message)s",
+    )
+    logging.getLogger("lens").setLevel(level)
 
 
 @click.group()
@@ -25,13 +37,12 @@ def cli() -> None:
 def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) -> None:
     """Run the full pipeline: feeds -> fetch -> extract -> summarize -> rank."""
     config = load_config()
+    _configure_logging("debug" if verbose else config.log_level)
 
     if config.provider != "ollama" and not config.api_key:
-        click.echo(
-            f"Error: LENS_API_KEY not set (required for {config.provider}). See .env.example",
-            err=True,
+        raise ConfigError(
+            f"LENS_API_KEY not set (required for {config.provider}). See .env.example"
         )
-        raise SystemExit(1)
 
     click.echo("Lens Pipeline")
     click.echo("=============")
@@ -46,13 +57,15 @@ def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) 
         api_key=config.api_key,
         base_url=config.base_url,
     )
-    result = asyncio.run(run_pipeline(
-        config=config,
-        provider=provider,
-        concurrency=concurrency,
-        overwrite=overwrite,
-        category_filter=category,
-    ))
+    result = asyncio.run(
+        run_pipeline(
+            config=config,
+            provider=provider,
+            concurrency=concurrency,
+            overwrite=overwrite,
+            category_filter=category,
+        )
+    )
 
     click.echo("")
     click.echo("Pipeline complete!")
@@ -74,6 +87,7 @@ def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) 
 def extract() -> None:
     """Run only the extraction phase (HTML -> clean text, no LLM)."""
     config = load_config()
+    _configure_logging(config.log_level)
 
     from lens.collect.extractor import extract_articles
 

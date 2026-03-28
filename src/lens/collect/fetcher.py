@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import aiohttp
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+# Per-request timeout for downloading article HTML (seconds)
+FETCH_TIMEOUT_SECONDS = 15.0
 
 
 @dataclass(frozen=True)
@@ -36,7 +45,7 @@ async def fetch_articles(
     urls: list[str],
     output_dir: Path,
     concurrency: int = 5,
-    timeout: float = 15.0,
+    timeout: float = FETCH_TIMEOUT_SECONDS,
     overwrite: bool = False,
 ) -> list[FetchResult]:
     """Fetch HTML content from multiple URLs concurrently.
@@ -74,12 +83,18 @@ async def fetch_articles(
                     html = await resp.text()
 
                 dest.write_text(html, encoding="utf-8")
+                logger.debug("Fetched %s -> %s", url, dest.name)
                 return FetchResult(url=url, success=True, path=dest)
-            except Exception as e:
+            except aiohttp.ClientError as e:
+                logger.warning("Fetch failed: %s: %s", url, e)
+                return FetchResult(url=url, success=False, error=str(e))
+            except OSError as e:
+                logger.warning("Write failed: %s: %s", dest, e)
                 return FetchResult(url=url, success=False, error=str(e))
 
     async with aiohttp.ClientSession() as session:
-        tasks = [_fetch_one(url, session) for url in urls]
-        results = await asyncio.gather(*tasks)
+        async with asyncio.TaskGroup() as tg:
+            tasks = [tg.create_task(_fetch_one(url, session)) for url in urls]
+        results = [t.result() for t in tasks]
 
-    return list(results)
+    return results

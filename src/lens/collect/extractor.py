@@ -8,48 +8,59 @@ Extracts article content by:
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 
+from lens.errors import ExtractionError
+
+logger = logging.getLogger(__name__)
+
 # Tags to remove entirely (element + children)
-REMOVE_TAGS = frozenset({
-    "script",
-    "style",
-    "noscript",
-    "svg",
-    "nav",
-    "header",
-    "footer",
-    "iframe",
-    "form",
-    "button",
-    "select",
-    "textarea",
-    "input",
-    "aside",
-})
+REMOVE_TAGS = frozenset(
+    {
+        "script",
+        "style",
+        "noscript",
+        "svg",
+        "nav",
+        "header",
+        "footer",
+        "iframe",
+        "form",
+        "button",
+        "select",
+        "textarea",
+        "input",
+        "aside",
+    }
+)
 
 # Roles that indicate non-content
-REMOVE_ROLES = frozenset({
-    "banner",
-    "navigation",
-    "complementary",
-    "contentinfo",
-})
+REMOVE_ROLES = frozenset(
+    {
+        "banner",
+        "navigation",
+        "complementary",
+        "contentinfo",
+    }
+)
 
 # Classes that indicate non-content
-REMOVE_CLASS_PATTERNS = frozenset({
-    "cookie",
-    "modal",
-    "popup",
-    "sidebar",
-    "skip",
-    "social-share",
-    "newsletter",
-    "advertisement",
-})
+REMOVE_CLASS_PATTERNS = frozenset(
+    {
+        "cookie",
+        "modal",
+        "popup",
+        "sidebar",
+        "skip",
+        "social-share",
+        "newsletter",
+        "advertisement",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -60,6 +71,10 @@ class ExtractionResult:
     title: str | None
     word_count: int
     urls: list[str]
+
+
+# Type alias for batch extraction results
+type ExtractionResultItem = tuple[Path, ExtractionResult | Exception]
 
 
 def extract_article(html: str) -> ExtractionResult:
@@ -104,7 +119,7 @@ def extract_articles(
     html_dir: Path,
     output_dir: Path,
     overwrite: bool = False,
-) -> list[tuple[Path, ExtractionResult | Exception]]:
+) -> list[ExtractionResultItem]:
     """Extract all HTML files in a directory to clean markdown.
 
     Args:
@@ -116,7 +131,7 @@ def extract_articles(
         List of (output_path, result | error) tuples.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    results: list[tuple[Path, ExtractionResult | Exception]] = []
+    results: list[ExtractionResultItem] = []
 
     html_files = sorted(html_dir.glob("*.html")) + sorted(html_dir.glob("*.htm"))
 
@@ -133,8 +148,9 @@ def extract_articles(
                     text=text, title=title_line, word_count=word_count, urls=[]
                 )
                 results.append((out_path, result))
-            except Exception as e:
-                results.append((out_path, e))
+            except OSError as e:
+                logger.warning("Failed to read existing %s: %s", out_path, e)
+                results.append((out_path, ExtractionError(str(e))))
             continue
 
         try:
@@ -144,9 +160,16 @@ def extract_articles(
             # Write as markdown
             md = _format_markdown(result, html_path.name)
             out_path.write_text(md, encoding="utf-8")
+            logger.debug(
+                "Extracted %s -> %s (%d words)",
+                html_path.name,
+                out_path.name,
+                result.word_count,
+            )
             results.append((out_path, result))
-        except Exception as e:
-            results.append((out_path, e))
+        except (OSError, ExtractionError) as e:
+            logger.warning("Extraction failed: %s: %s", html_path.name, e)
+            results.append((out_path, ExtractionError(str(e))))
 
     return results
 
@@ -196,9 +219,7 @@ def _remove_noise(element: Tag) -> None:
 
     # Collect hidden elements
     to_remove.extend(element.find_all(attrs={"aria-hidden": "true"}))
-    to_remove.extend(
-        element.find_all(style=lambda s: s and "display:none" in s.replace(" ", ""))
-    )
+    to_remove.extend(element.find_all(style=lambda s: s and "display:none" in s.replace(" ", "")))
 
     # Collect by class patterns
     for tag in element.find_all(True):
@@ -231,11 +252,15 @@ def _extract_text(element: Tag) -> str:
                     lines.append("")
                     lines.append(f"{'#' * level} {heading_text}")
                     lines.append("")
-            elif child.name in ("p", "div", "section", "article", "blockquote"):
-                lines.append("")
-            elif child.name == "br":
-                lines.append("")
-            elif child.name == "li":
+            elif child.name in (
+                "p",
+                "div",
+                "section",
+                "article",
+                "blockquote",
+                "br",
+                "li",
+            ):
                 lines.append("")
 
     # Join and clean up

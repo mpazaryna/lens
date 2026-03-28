@@ -3,10 +3,19 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from lens.providers.base import LLMProvider
+if TYPE_CHECKING:
+    from lens.providers.base import LLMProvider
+
+logger = logging.getLogger(__name__)
+
+# Maximum characters of article text sent to the LLM for summarization.
+# Longer articles are truncated to stay within typical context windows.
+MAX_ARTICLE_CHARS = 15_000
 
 
 @dataclass(frozen=True)
@@ -47,11 +56,12 @@ async def summarize_article(
     start = time.monotonic()
     try:
         response = await provider.complete(
-            prompt=SUMMARIZE_PROMPT.format(text=text[:15000]),
+            prompt=SUMMARIZE_PROMPT.format(text=text[:MAX_ARTICLE_CHARS]),
             max_tokens=1024,
         )
 
         elapsed = (time.monotonic() - start) * 1000
+        logger.debug("Summarized %s in %.0fms", source, elapsed)
 
         return SummaryResult(
             success=True,
@@ -62,6 +72,7 @@ async def summarize_article(
         )
     except Exception as e:
         elapsed = (time.monotonic() - start) * 1000
+        logger.warning("Summarization failed for %s: %s", source, e)
         return SummaryResult(
             success=False,
             source=source,
