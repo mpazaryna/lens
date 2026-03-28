@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>ai</title>
+</head>
+<body>
+<outline text="ai" title="ai">
+<outline type="rss" text="RSS Feed" title="RSS Feed" xmlUrl="https://alphasignal.ai/join-1?format=rss" htmlUrl="https://alphasignal.ai" />
+<outline type="rss" text="Artificial Intelligence in Plain English - Medium" title="Artificial Intelligence in Plain English - Medium" xmlUrl="https://ai.plainenglish.io/feed" htmlUrl="https://ai.plainenglish.io?source=rss----78d064101951---4" />
+<outline type="rss" text="AI Newsletter" title="AI Newsletter" xmlUrl="https://nlp.elvissaravia.com/feed" htmlUrl="https://nlp.elvissaravia.com" />
+<outline type="rss" text="RSS Feed" title="RSS Feed" xmlUrl="https://alphasignal.ai/join-1?format=rss" htmlUrl="https://alphasignal.ai" />
+<outline type="rss" text="paz.land" title="paz.land" xmlUrl="https://paz.land/rss.xml" htmlUrl="https://paz.land/" />
+</outline>
+</body>
+</opml>

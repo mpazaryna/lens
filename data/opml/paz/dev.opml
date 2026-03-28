@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>dev</title>
+</head>
+<body>
+<outline text="dev" title="dev">
+<outline type="rss" text="Molly White's activity feed" title="Molly White's activity feed" xmlUrl="https://www.mollywhite.net/feed/feed.xml" htmlUrl="https://mollywhite.net/feed" />
+<outline type="rss" text="Simon Willison's Weblog" title="Simon Willison's Weblog" xmlUrl="https://simonwillison.net/atom/everything/" htmlUrl="http://simonwillison.net/" />
+<outline type="rss" text="Maggie Appleton" title="Maggie Appleton" xmlUrl="https://maggieappleton.com/rss.xml" htmlUrl="https://maggieappleton.com/" />
+<outline type="rss" text="Martin Fowler" title="Martin Fowler" xmlUrl="http://martinfowler.com/feed.atom" htmlUrl="https://martinfowler.com/feed.atom" />
+<outline type="rss" text="Data Is Plural" title="Data Is Plural" xmlUrl="https://www.data-is-plural.com/feed.xml" htmlUrl="https://www.data-is-plural.com" />
+<outline type="rss" text="Silvio Rizzi" title="Silvio Rizzi" xmlUrl="https://gloria.social/@rizzi.rss" htmlUrl="https://gloria.social/@rizzi" />
+</outline>
+</body>
+</opml>

@@ -12,14 +12,6 @@
                xmlUrl="https://lobste.rs/rss"
                htmlUrl="https://lobste.rs"/>
     </outline>
-    <outline text="DotNet" title="DotNet">
-      <outline type="rss" text=".NET Blog" title=".NET Blog"
-               xmlUrl="https://devblogs.microsoft.com/dotnet/feed/"
-               htmlUrl="https://devblogs.microsoft.com/dotnet/"/>
-      <outline type="rss" text="Andrew Lock" title="Andrew Lock"
-               xmlUrl="https://andrewlock.net/rss/"
-               htmlUrl="https://andrewlock.net"/>
-    </outline>
     <outline text="News" title="News">
       <outline type="rss" text="BBC Top Stories" title="BBC Top Stories"
                xmlUrl="https://feeds.bbci.co.uk/news/rss.xml"

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>misc</title>
+</head>
+<body>
+<outline text="misc" title="misc">
+<outline type="rss" text="fermentersclub.com" title="fermentersclub.com" xmlUrl="https://fermentersclub.com/wp-json/wp/v2/pages/10354" htmlUrl="https://fermentersclub.com" />
+<outline type="rss" text="thecoaster.net" title="thecoaster.net" xmlUrl="https://thecoaster.net/wp-json/wp/v2/pages/21149" htmlUrl="https://thecoaster.net" />
+<outline type="rss" text="RSS Feed" title="RSS Feed" xmlUrl="https://www.evalotta.net/home?format=rss" htmlUrl="https://www.evalotta.net" />
+<outline type="rss" text="Said the Gramophone" title="Said the Gramophone" xmlUrl="http://feeds.feedburner.com/saidthegramophone/stg" htmlUrl="https://www.saidthegramophone.com/" />
+<outline type="rss" text="The Sweet Setup" title="The Sweet Setup" xmlUrl="https://thesweetsetup.com/feed/" htmlUrl="https://thesweetsetup.com/" />
+<outline type="rss" text="Asbury Park Reporter" title="Asbury Park Reporter" xmlUrl="https://asburyparkreporter.com/feed/" htmlUrl="https://asburyparkreporter.com/" />
+<outline type="rss" text="The Noun Project Blog" title="The Noun Project Blog" xmlUrl="https://blog.thenounproject.com/feed/" htmlUrl="https://blog.thenounproject.com" />
+</outline>
+</body>
+</opml>

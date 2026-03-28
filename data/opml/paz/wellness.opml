@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>wellness</title>
+</head>
+<body>
+<outline text="wellness" title="wellness">
+<outline type="rss" text="Awakening at Home" title="Awakening at Home" xmlUrl="https://www.awakeningathome.org/blog?format=rss" htmlUrl="https://www.awakeningathome.org/blog/" />
+<outline type="rss" text="Spirituality &amp; Practice" title="Spirituality &amp; Practice" xmlUrl="https://www.spiritualityandpractice.com/rss/" htmlUrl="https://www.spiritualityandpractice.com/rss" />
+<outline type="rss" text="Karen Maezen Miller" title="Karen Maezen Miller" xmlUrl="https://karenmaezenmiller.com/feed/" htmlUrl="https://karenmaezenmiller.com" />
+<outline type="rss" text="Reasons to be Cheerful" title="Reasons to be Cheerful" xmlUrl="https://reasonstobecheerful.world/feed/" htmlUrl="https://reasonstobecheerful.world/" />
+<outline type="rss" text="grateful.org" title="grateful.org" xmlUrl="https://grateful.org/wp-json/wp/v2/pages/3234635" htmlUrl="https://grateful.org" />
+<outline type="rss" text="A Working Library" title="A Working Library" xmlUrl="https://aworkinglibrary.com/feed/index.xml" htmlUrl="https://aworkinglibrary.com/feed/index.xml" />
+<outline type="rss" text="Cory Doctorow" title="Cory Doctorow" xmlUrl="https://pluralistic.net/feed/" htmlUrl="https://pluralistic.net" />
+<outline type="rss" text="Zen Peacemakers" title="Zen Peacemakers" xmlUrl="http://zenpeacemakers.org/feed/" htmlUrl="https://zenpeacemakers.org" />
+<outline type="rss" text="Messy Nessy Chic" title="Messy Nessy Chic" xmlUrl="https://www.messynessychic.com/feed/" htmlUrl="https://www.messynessychic.com/" />
+<outline type="rss" text="Integral Yoga® Magazine" title="Integral Yoga® Magazine" xmlUrl="https://integralyogamagazine.org/feed/" htmlUrl="https://integralyogamagazine.org/" />
+</outline>
+</body>
+</opml>

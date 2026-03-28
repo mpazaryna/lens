@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>photography</title>
+</head>
+<body>
+<outline text="photography" title="photography">
+<outline type="rss" text="Aperture" title="Aperture" xmlUrl="https://aperture.org/feed/" htmlUrl="https://aperture.org/" />
+<outline type="rss" text="The Leica camera Blog" title="The Leica camera Blog" xmlUrl="https://www.leica-camera.blog/feed/" htmlUrl="https://leica-camera.blog/" />
+<outline type="rss" text="Feature Shoot" title="Feature Shoot" xmlUrl="https://www.featureshoot.com/feed/" htmlUrl="https://www.featureshoot.com/" />
+</outline>
+</body>
+</opml>

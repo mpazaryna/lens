@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>reading</title>
+</head>
+<body>
+<outline text="reading" title="reading">
+<outline type="rss" text="Page-Turner: Book Reviews, Literature, and Writing" title="Page-Turner: Book Reviews, Literature, and Writing" xmlUrl="https://www.newyorker.com/feed/books/page-turner" htmlUrl="https://www.newyorker.com" />
+<outline type="rss" text="Steven Pressfield" title="Steven Pressfield" xmlUrl="https://stevenpressfield.com/feed/" htmlUrl="https://stevenpressfield.com" />
+<outline type="rss" text="The Marginalian" title="The Marginalian" xmlUrl="http://feedproxy.google.com/brainpickings/rss" htmlUrl="https://www.themarginalian.org" />
+<outline type="rss" text="Chris Aldrich" title="Chris Aldrich" xmlUrl="https://boffosocko.com/feed/" htmlUrl="https://boffosocko.com" />
+<outline type="rss" text="Harsh Browns" title="Harsh Browns" xmlUrl="https://visitmy.website/feed.xml" htmlUrl="https://visitmy.website/feed.xml" />
+</outline>
+</body>
+</opml>
