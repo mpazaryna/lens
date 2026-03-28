@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "if": "Bash(git commit:*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run ruff format --check src/ tests/ && uv run ruff check src/ tests/",
+            "timeout": 30,
+            "statusMessage": "Running lint checks..."
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "orchestra@agentic-factory": true
+  }
+}
