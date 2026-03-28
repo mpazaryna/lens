@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from pathlib import Path
 
 import click
 
@@ -34,9 +35,18 @@ def cli() -> None:
 @click.option("--overwrite", is_flag=True, help="Overwrite existing files.")
 @click.option("--category", default=None, help="Filter feeds by OPML category.")
 @click.option("--verbose", is_flag=True, help="Enable verbose output.")
-def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) -> None:
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+@click.option("--opml", default=None, type=click.Path(path_type=Path), help="OPML file path.")
+def run(
+    concurrency: int,
+    overwrite: bool,
+    category: str | None,
+    verbose: bool,
+    data_dir: Path | None,
+    opml: Path | None,
+) -> None:
     """Run the full pipeline: feeds -> fetch -> extract -> summarize -> rank."""
-    config = load_config()
+    config = load_config(data_dir_override=data_dir, opml_override=opml)
     _configure_logging("debug" if verbose else config.log_level)
 
     if config.provider != "ollama" and not config.api_key:
@@ -84,9 +94,10 @@ def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) 
 
 
 @cli.command()
-def extract() -> None:
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+def extract(data_dir: Path | None) -> None:
     """Run only the extraction phase (HTML -> clean text, no LLM)."""
-    config = load_config()
+    config = load_config(data_dir_override=data_dir)
     _configure_logging(config.log_level)
 
     from lens.collect.extractor import extract_articles

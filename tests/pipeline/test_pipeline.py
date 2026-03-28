@@ -87,6 +87,7 @@ class TestExtractContent:
             model="test",
             base_url=None,
             log_level="info",
+            opml_path=tmp_data_dir / "feeds.opml",
         )
         # Write HTML files
         (tmp_data_dir / "fetched" / "article.html").write_text(
@@ -108,6 +109,7 @@ class TestExtractContent:
             model="test",
             base_url=None,
             log_level="info",
+            opml_path=tmp_data_dir / "feeds.opml",
         )
         # Empty dir = no files to extract
         result = PipelineResult()
@@ -129,6 +131,7 @@ class TestFetchFeedItems:
             model="test",
             base_url=None,
             log_level="info",
+            opml_path=tmp_data_dir / "feeds.opml",
         )
         result = PipelineResult()
         items = await fetch_feed_items(config, None, result)
@@ -145,6 +148,7 @@ class TestFetchFeedItems:
             model="test",
             base_url=None,
             log_level="info",
+            opml_path=tmp_data_dir / "feeds.opml",
         )
         # Write a minimal OPML
         opml = """<?xml version="1.0"?>
