@@ -5,6 +5,7 @@ Collection: feeds -> fetch -> extract
 Enrichment: summarize -> rank
 
 Each phase is a pure function with explicit inputs and outputs.
+Uses the ADR-006 state tracker for per-item status tracking.
 """
 
 from __future__ import annotations
@@ -13,16 +14,22 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from lens.collect.extractor import ExtractionResultItem, extract_articles
-from lens.collect.fetcher import fetch_articles
+from lens.collect.fetcher import FetchResult, fetch_articles
 from lens.collect.opml import parse_opml
 from lens.collect.rss import Feed, FeedItem, fetch_feeds
 from lens.enrich.ranker import rank_batch
 from lens.enrich.summarizer import SummaryResult, summarize_batch
+from lens.pipeline.state import (
+    discover_items,
+    items_at_status,
+    load_state,
+    save_state,
+    transition_item,
+)
 
 if TYPE_CHECKING:
     from lens.config import Config
@@ -42,40 +49,6 @@ class PipelineResult:
     articles_ranked: int = 0
     errors: list[str] = field(default_factory=list)
     elapsed_seconds: float = 0.0
-
-
-# --- Seen ledger (pure data + functions) ---
-
-
-def load_seen(path: Path) -> dict[str, dict]:
-    """Load the seen ledger from disk."""
-    if path.exists():
-        return json.loads(path.read_text())
-    return {}
-
-
-def save_seen(path: Path, ledger: dict[str, dict]) -> None:
-    """Save the seen ledger to disk."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(ledger, indent=2))
-
-
-def filter_new_urls(urls: list[str], seen: dict[str, dict]) -> list[str]:
-    """Return only URLs not already in the seen ledger."""
-    return [u for u in urls if u not in seen]
-
-
-def mark_seen(
-    ledger: dict[str, dict],
-    urls: list[str],
-    title_map: dict[str, str],
-) -> dict[str, dict]:
-    """Return a new ledger with the given URLs marked as seen."""
-    now = datetime.now(UTC).isoformat()
-    updated = {**ledger}
-    for url in urls:
-        updated[url] = {"processedAt": now, "title": title_map.get(url, "")}
-    return updated
 
 
 # --- Pipeline phases ---
@@ -148,7 +121,7 @@ async def fetch_html(
     result: PipelineResult,
     concurrency: int = 5,
     overwrite: bool = False,
-) -> None:
+) -> list[FetchResult]:
     """Phase 2: Fetch HTML content for article URLs."""
     fetch_results = await fetch_articles(
         urls,
@@ -160,6 +133,7 @@ async def fetch_html(
     for r in fetch_results:
         if not r.success:
             result.errors.append(f"Fetch failed: {r.url}: {r.error}")
+    return fetch_results
 
 
 def extract_content(
@@ -266,7 +240,101 @@ async def rank_content(
     (config.ranked_dir / "rankings.json").write_text(json.dumps(rankings_data, indent=2))
 
 
-# --- Top-level orchestrator ---
+# --- Collection orchestrator (state-tracker aware) ---
+
+
+async def run_collection(
+    config: Config,
+    concurrency: int = 5,
+    overwrite: bool = False,
+    category_filter: str | None = None,
+    retry_failed: bool = False,
+) -> PipelineResult:
+    """Execute the collection pipeline (feeds -> fetch -> extract).
+
+    Uses the ADR-006 state tracker for per-item status tracking.
+    Items already at 'fetched' skip to extraction. Items at 'extracted'
+    or beyond are skipped entirely.
+
+    Args:
+        config: Application configuration.
+        concurrency: Max concurrent operations per phase.
+        overwrite: Whether to overwrite existing files.
+        category_filter: Optional OPML category filter.
+        retry_failed: Reset failed items and reprocess them.
+
+    Returns:
+        PipelineResult with counts and timing.
+    """
+    start = time.monotonic()
+    result = PipelineResult()
+    state = load_state(config.state_path)
+
+    # Reset failed items if requested
+    if retry_failed:
+        failed = items_at_status(state, "failed")
+        for item_id, item in failed.items():
+            state[item_id] = {**item, "status": "new", "error": None}
+        if failed:
+            logger.info("Reset %d failed items for retry", len(failed))
+
+    # Phase 1: Parse OPML and fetch feeds
+    logger.info("Phase 1: Fetching feeds...")
+    feed_items = await fetch_feed_items(config, category_filter, result)
+
+    if not feed_items:
+        result.elapsed_seconds = time.monotonic() - start
+        return result
+
+    # Discover new items in state tracker
+    discovery_items = [
+        {"url": item.link, "title": item.title, "feed": ""} for item in feed_items if item.link
+    ]
+    state = discover_items(state, discovery_items)
+
+    # Phase 2: Fetch HTML for items at 'new' status
+    new_items = items_at_status(state, "new")
+    new_urls = [item["url"] for item in new_items.values()]
+
+    logger.info(
+        "%d new, %d already processed",
+        len(new_urls),
+        len(discovery_items) - len(new_urls),
+    )
+
+    if new_urls:
+        logger.info("Phase 2: Fetching %d articles...", len(new_urls))
+        fetch_results = await fetch_html(new_urls, config, result, concurrency, overwrite)
+
+        # Update state per-item based on fetch results
+        url_to_fetch = {r.url: r for r in fetch_results}
+        for item_id, item in new_items.items():
+            fetch_result = url_to_fetch.get(item["url"])
+            if fetch_result and fetch_result.success:
+                state[item_id] = transition_item(item, "fetched", stage_time=0.0)
+            elif fetch_result and not fetch_result.success:
+                state[item_id] = transition_item(
+                    item, "failed", error=fetch_result.error or "Unknown fetch error"
+                )
+
+    # Phase 3: Extract HTML for items at 'fetched' status
+    fetched_items = items_at_status(state, "fetched")
+    if fetched_items:
+        logger.info("Phase 3: Extracting content...")
+        extract_content(config, result, overwrite)
+
+        # Mark fetched items as extracted
+        for item_id, item in fetched_items.items():
+            state[item_id] = transition_item(item, "extracted", stage_time=0.0)
+
+    # Save state
+    save_state(config.state_path, state)
+
+    result.elapsed_seconds = time.monotonic() - start
+    return result
+
+
+# --- Full pipeline orchestrator ---
 
 
 async def run_pipeline(
@@ -276,7 +344,7 @@ async def run_pipeline(
     overwrite: bool = False,
     category_filter: str | None = None,
 ) -> PipelineResult:
-    """Execute the full pipeline.
+    """Execute the full pipeline (collection + enrichment).
 
     Args:
         config: Application configuration.
@@ -289,46 +357,18 @@ async def run_pipeline(
         PipelineResult with counts and timing.
     """
     start = time.monotonic()
-    result = PipelineResult()
-    seen = load_seen(config.seen_path)
 
-    # Phase 1: Parse OPML and fetch feeds
-    logger.info("Phase 1: Fetching feeds...")
-    feed_items = await fetch_feed_items(config, category_filter, result)
-
-    if not feed_items:
-        result.elapsed_seconds = time.monotonic() - start
-        return result
-
-    # Phase 2: Filter new items and fetch HTML
-    urls = [item.link for item in feed_items if item.link]
-    new_urls = filter_new_urls(urls, seen)
-    logger.info("%d new, %d already processed", len(new_urls), len(urls) - len(new_urls))
-
-    if not new_urls:
-        logger.info("No new articles to process.")
-        result.elapsed_seconds = time.monotonic() - start
-        return result
-
-    logger.info("Phase 2: Fetching %d articles...", len(new_urls))
-    await fetch_html(new_urls, config, result, concurrency, overwrite)
-
-    # Phase 3: Extract HTML to clean text
-    logger.info("Phase 3: Extracting content...")
-    extract_results = extract_content(config, result, overwrite)
+    # Run collection
+    result = await run_collection(config, concurrency, overwrite, category_filter)
 
     # Phase 4: Summarize
     logger.info("Phase 4: Summarizing %d articles...", result.articles_extracted)
+    extract_results = extract_content(config, result, overwrite=False)
     summaries = await summarize_content(extract_results, config, provider, result, concurrency)
 
     # Phase 5: Rank
     logger.info("Phase 5: Ranking %d articles...", result.articles_summarized)
     await rank_content(summaries, config, provider, result, concurrency)
-
-    # Update seen ledger
-    title_map = {item.link: item.title for item in feed_items}
-    updated_seen = mark_seen(seen, new_urls, title_map)
-    save_seen(config.seen_path, updated_seen)
 
     result.elapsed_seconds = time.monotonic() - start
     return result

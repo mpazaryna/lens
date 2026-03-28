@@ -26,15 +26,61 @@ The pipeline architecture uses filesystem handoffs between stages (ADR-002). Thi
 
 ## Milestones
 
-| Material | Location | Dependency | Status |
-|----------|----------|------------|--------|
-| Core Pipeline (Collection) | .orchestra/work/core-pipeline/prd.md | -- | In Progress |
-| Enrichment Pipeline | .orchestra/work/enrichment-pipeline/prd.md | Core Pipeline | Not Started |
-| Scaling Spike | .orchestra/work/scaling-spike/prd.md | Core Pipeline | Not Started |
-| Source Adapters | .orchestra/work/source-adapters/prd.md | Core Pipeline | Not Started |
-| Ranking | .orchestra/work/ranking/prd.md | Enrichment Pipeline | Not Started |
-| Content Type Routing | .orchestra/work/content-type-routing/prd.md | Enrichment Pipeline | Not Started |
-| Preference Learning | .orchestra/work/preference-learning/prd.md | Ranking | Not Started |
+### Core Pipeline (Collection)
+
+Builds a reliable content ingestion system that discovers, fetches, and extracts clean text from RSS feeds with full state tracking and recovery. This foundation ensures no data is lost and produces extracted text ready for downstream LLM processing.
+
+- PRD: [.orchestra/work/core-pipeline/prd.md](.orchestra/work/core-pipeline/prd.md)
+- Dependency: --
+- Status: Complete
+
+### Enrichment Pipeline
+
+Adds LLM-powered summarization, classification, and enrichment as a separate layer with its own scheduling, scaling, and cost controls. Reads extracted text from collection and produces enriched output (summaries, scores) on a best-effort basis.
+
+- PRD: [.orchestra/work/enrichment-pipeline/prd.md](.orchestra/work/enrichment-pipeline/prd.md)
+- Dependency: Core Pipeline
+- Status: Not Started
+
+### Scaling Spike
+
+A time-boxed proof-of-concept validating that pipeline stage interfaces can swap from filesystem handoffs to queue-backed transport without rewriting stage code. De-risks the architectural path from small-scale to SaaS before more stages are built.
+
+- PRD: [.orchestra/work/scaling-spike/prd.md](.orchestra/work/scaling-spike/prd.md)
+- Dependency: Core Pipeline
+- Status: Not Started
+
+### Source Adapters
+
+Extracts RSS-specific collection logic into a generic source adapter interface and proves it with a second adapter (Zotero). Both adapters produce the same extracted output format, ensuring enrichment works identically regardless of source.
+
+- PRD: [.orchestra/work/source-adapters/prd.md](.orchestra/work/source-adapters/prd.md)
+- Dependency: Core Pipeline
+- Status: Not Started
+
+### Ranking
+
+Implements consumer-specific content ranking that scores and prioritizes summarized content based on user interest profiles. Leverages existing LLM tool-use infrastructure to produce structured scores tailored to individual users.
+
+- PRD: [.orchestra/work/ranking/prd.md](.orchestra/work/ranking/prd.md)
+- Dependency: Enrichment Pipeline
+- Status: Not Started
+
+### Content Type Routing
+
+Detects whether content is a video or article and routes each type through specialized processing paths. Enables format-aware enrichment so videos get transcript-based summarization while articles get text-based analysis.
+
+- PRD: [.orchestra/work/content-type-routing/prd.md](.orchestra/work/content-type-routing/prd.md)
+- Dependency: Enrichment Pipeline
+- Status: Not Started
+
+### Preference Learning
+
+Learns and adapts to user interests and content format preferences over time through implicit and explicit feedback signals. Closes the loop between ranking output and user behavior to continuously improve recommendations.
+
+- PRD: [.orchestra/work/preference-learning/prd.md](.orchestra/work/preference-learning/prd.md)
+- Dependency: Ranking
+- Status: Not Started
 
 ## References
 

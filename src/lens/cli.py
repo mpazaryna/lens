@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from pathlib import Path
 
 import click
 
 from lens.config import load_config
 from lens.errors import ConfigError
-from lens.pipeline import run_pipeline
+from lens.pipeline import run_collection, run_pipeline
 from lens.providers import create_provider
 
 
@@ -34,9 +35,18 @@ def cli() -> None:
 @click.option("--overwrite", is_flag=True, help="Overwrite existing files.")
 @click.option("--category", default=None, help="Filter feeds by OPML category.")
 @click.option("--verbose", is_flag=True, help="Enable verbose output.")
-def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) -> None:
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+@click.option("--opml", default=None, type=click.Path(path_type=Path), help="OPML file path.")
+def run(
+    concurrency: int,
+    overwrite: bool,
+    category: str | None,
+    verbose: bool,
+    data_dir: Path | None,
+    opml: Path | None,
+) -> None:
     """Run the full pipeline: feeds -> fetch -> extract -> summarize -> rank."""
-    config = load_config()
+    config = load_config(data_dir_override=data_dir, opml_override=opml)
     _configure_logging("debug" if verbose else config.log_level)
 
     if config.provider != "ollama" and not config.api_key:
@@ -84,9 +94,60 @@ def run(concurrency: int, overwrite: bool, category: str | None, verbose: bool) 
 
 
 @cli.command()
-def extract() -> None:
+@click.option("--concurrency", default=5, help="Max concurrent operations per phase.")
+@click.option("--overwrite", is_flag=True, help="Overwrite existing files.")
+@click.option("--category", default=None, help="Filter feeds by OPML category.")
+@click.option("--verbose", is_flag=True, help="Enable verbose output.")
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+@click.option("--opml", default=None, type=click.Path(path_type=Path), help="OPML file path.")
+@click.option("--retry-failed", is_flag=True, help="Retry previously failed items.")
+def collect(
+    concurrency: int,
+    overwrite: bool,
+    category: str | None,
+    verbose: bool,
+    data_dir: Path | None,
+    opml: Path | None,
+    retry_failed: bool,
+) -> None:
+    """Run collection only: feeds -> fetch -> extract (no LLM)."""
+    config = load_config(data_dir_override=data_dir, opml_override=opml)
+    _configure_logging("debug" if verbose else config.log_level)
+
+    click.echo("Lens Collection")
+    click.echo("================")
+    click.echo(f"Data directory: {config.data_dir}")
+    click.echo("")
+
+    result = asyncio.run(
+        run_collection(
+            config=config,
+            concurrency=concurrency,
+            overwrite=overwrite,
+            category_filter=category,
+            retry_failed=retry_failed,
+        )
+    )
+
+    click.echo("")
+    click.echo("Collection complete!")
+    click.echo(f"   Feeds found: {result.feeds_found}")
+    click.echo(f"   Articles fetched: {result.articles_fetched}")
+    click.echo(f"   Articles extracted: {result.articles_extracted}")
+    click.echo(f"   Errors: {len(result.errors)}")
+    click.echo(f"   Elapsed: {result.elapsed_seconds:.1f}s")
+
+    if result.errors and verbose:
+        click.echo("\nErrors:")
+        for err in result.errors:
+            click.echo(f"   - {err}")
+
+
+@cli.command()
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+def extract(data_dir: Path | None) -> None:
     """Run only the extraction phase (HTML -> clean text, no LLM)."""
-    config = load_config()
+    config = load_config(data_dir_override=data_dir)
     _configure_logging(config.log_level)
 
     from lens.collect.extractor import extract_articles
