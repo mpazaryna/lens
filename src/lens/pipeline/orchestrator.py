@@ -66,9 +66,18 @@ async def fetch_feed_items(
         Tuple of (all_items, url_to_feed) where url_to_feed maps
         article URLs to their sanitized feed name.
     """
-    opml_files = sorted(config.opml_dir.glob("*.opml"))
+    # opml_path can be a single file or a directory of OPML files
+    opml_source = config.opml_path
+    if opml_source.is_file():
+        opml_files = [opml_source]
+    elif opml_source.is_dir():
+        opml_files = sorted(opml_source.glob("*.opml"))
+    else:
+        # Fall back to opml_dir for backward compat
+        opml_files = sorted(config.opml_dir.glob("*.opml"))
+
     if not opml_files:
-        result.errors.append(f"No OPML files found in {config.opml_dir}")
+        result.errors.append(f"No OPML files found in {opml_source}")
         return [], {}
 
     all_feed_sources = []
