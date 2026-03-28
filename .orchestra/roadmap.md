@@ -42,6 +42,14 @@ Adds LLM-powered summarization, classification, and enrichment as a separate lay
 - Dependency: Core Pipeline
 - Status: Complete
 
+### Digest and Export
+
+Produces consumable output from enriched content. `lens digest` generates a per-feed markdown briefing with ranked summaries -- one file per feed, ready for a morning review or downstream processing. `lens export` outputs structured data in formats that plug into external workflows (Obsidian, newsletters, other pipelines).
+
+- PRD: [.orchestra/work/digest-export/prd.md](.orchestra/work/digest-export/prd.md)
+- Dependency: Enrichment Pipeline
+- Status: Not Started
+
 ### Scaling Spike
 
 A time-boxed proof-of-concept validating that pipeline stage interfaces can swap from filesystem handoffs to queue-backed transport without rewriting stage code. De-risks the architectural path from small-scale to SaaS before more stages are built.
