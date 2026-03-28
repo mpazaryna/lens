@@ -11,6 +11,7 @@ import logging
 import time
 from typing import TYPE_CHECKING
 
+from lens.collect.fetcher import _url_to_filename
 from lens.enrich.summarizer import summarize_article
 from lens.pipeline.orchestrator import PipelineResult
 from lens.pipeline.runlog import (
@@ -37,18 +38,22 @@ logger = logging.getLogger(__name__)
 def _find_extracted_text(config: Config, url: str, feed: str) -> str | None:
     """Find the extracted markdown file for a given item.
 
-    Searches both feed subdirectories and flat extracted/ directory.
+    Derives the expected filename from the URL using the same logic
+    as the fetcher, then looks for the corresponding .md file.
     """
+    html_name = _url_to_filename(url)
+    md_name = html_name.rsplit(".", 1)[0] + ".md"
+
     # Try feed subdirectory first
     if feed:
-        feed_dir = config.extracted_dir / feed
-        if feed_dir.exists():
-            for md_file in feed_dir.glob("*.md"):
-                return md_file.read_text(encoding="utf-8")
+        candidate = config.extracted_dir / feed / md_name
+        if candidate.exists():
+            return candidate.read_text(encoding="utf-8")
 
     # Fall back to flat directory
-    for md_file in config.extracted_dir.glob("*.md"):
-        return md_file.read_text(encoding="utf-8")
+    candidate = config.extracted_dir / md_name
+    if candidate.exists():
+        return candidate.read_text(encoding="utf-8")
 
     return None
 

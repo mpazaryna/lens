@@ -68,7 +68,7 @@ class TestRunEnrichment:
         # Create extracted markdown files
         extracted_dir = tmp_data_dir / "extracted" / "test"
         extracted_dir.mkdir(parents=True)
-        (extracted_dir / "article-a.md").write_text("# Article A\n\nSome content about AI.")
+        (extracted_dir / "a.md").write_text("# Article A\n\nSome content about AI.")
 
         # State with extracted item
         item_id = item_id_from_url("https://example.com/a")
@@ -118,8 +118,8 @@ class TestRunEnrichment:
 
         extracted_dir = tmp_data_dir / "extracted" / "test"
         extracted_dir.mkdir(parents=True)
-        (extracted_dir / "article-a.md").write_text("# A\n\nContent A")
-        (extracted_dir / "article-b.md").write_text("# B\n\nContent B")
+        (extracted_dir / "a.md").write_text("# A\n\nContent A")
+        (extracted_dir / "b.md").write_text("# B\n\nContent B")
 
         id_a = item_id_from_url("https://example.com/a")
         id_b = item_id_from_url("https://example.com/b")
@@ -178,7 +178,7 @@ class TestRunEnrichment:
 
         extracted_dir = tmp_data_dir / "extracted" / "test"
         extracted_dir.mkdir(parents=True)
-        (extracted_dir / "article-a.md").write_text("# A\n\nContent")
+        (extracted_dir / "a.md").write_text("# A\n\nContent")
 
         item_id = item_id_from_url("https://example.com/a")
         save_state(
@@ -206,7 +206,7 @@ class TestRunEnrichment:
 
         extracted_dir = tmp_data_dir / "extracted" / "test"
         extracted_dir.mkdir(parents=True)
-        (extracted_dir / "article-a.md").write_text("# Article A\n\nContent about AI.")
+        (extracted_dir / "a.md").write_text("# Article A\n\nContent about AI.")
 
         item_id = item_id_from_url("https://example.com/a")
         save_state(
@@ -232,7 +232,7 @@ class TestRunEnrichment:
 
         extracted_dir = tmp_data_dir / "extracted" / "test-feed"
         extracted_dir.mkdir(parents=True)
-        (extracted_dir / "article.md").write_text("# Test\n\nContent.")
+        (extracted_dir / "a.md").write_text("# Test\n\nContent.")
 
         item_id = item_id_from_url("https://example.com/a")
         save_state(
@@ -284,7 +284,7 @@ class TestRunEnrichment:
 
         extracted_dir = tmp_data_dir / "extracted" / "test"
         extracted_dir.mkdir(parents=True)
-        (extracted_dir / "article.md").write_text("# Test\n\nContent.")
+        (extracted_dir / "a.md").write_text("# Test\n\nContent.")
 
         item_id = item_id_from_url("https://example.com/a")
         save_state(
