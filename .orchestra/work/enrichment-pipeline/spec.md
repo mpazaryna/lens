@@ -22,7 +22,7 @@ Refactor the fetcher and extractor to write output into feed-named subdirectorie
 
 #### Tests
 
-Derive from Gherkin (to be written). Write first in `tests/collect/test_fetcher.py` and `tests/pipeline/test_pipeline.py`:
+Derive from [gherkin.md](gherkin.md) -- Step 0 scenarios (write Gherkin before implementation). Write first in `tests/collect/test_fetcher.py` and `tests/pipeline/test_pipeline.py`:
 
 - Fetched HTML is written to `fetched/{feed_name}/{filename}.html`
 - Extracted markdown is written to `extracted/{feed_name}/{filename}.md`
@@ -59,7 +59,7 @@ Add a `lens enrich` command that runs only the enrichment pipeline against previ
 
 - Add `enrich` command to `src/lens/cli.py`
 - Accepts `--concurrency`, `--data-dir`, `--verbose`, `--retry-failed` flags
-- Requires API key (unlike `lens collect`)
+- Requires API key (unlike `lens collect`) -- document this asymmetry in `--help` text and README
 - Output: summary of items enriched, errors, elapsed time
 
 #### Tests
@@ -77,7 +77,7 @@ Acceptance: all tests pass; `uv run pytest tests/test_cli.py` green
 
 Create `run_enrichment()` function that processes items at `extracted` status through summarization, updating the state tracker to `summarized` on success or `failed` on error. Mirrors `run_collection()` pattern.
 
-- Add `run_enrichment()` to `src/lens/pipeline/orchestrator.py`
+- Create `src/lens/pipeline/enrichment.py` with `run_enrichment()` (keep orchestrator.py focused on collection and top-level `run_pipeline`)
 - Query state tracker for items at `extracted` status
 - Pass each item through summarization with per-stage provider
 - Update state to `summarized` with stage timing on success
@@ -94,13 +94,14 @@ Write first in `tests/pipeline/test_pipeline.py`:
 - Failed summarization marks item as `failed`, other items continue
 - Items not at `extracted` are skipped
 - `--retry-failed` resets failed enrichment items to `extracted`
+- Second run is a no-op (items already at `summarized` are skipped)
 - Summary JSON written to `processed/` with expected schema
 
 Acceptance: all tests pass; `uv run pytest tests/pipeline/` green
 
 ### Step 4: Structured summarization output
 
-Update summarization output from markdown to structured JSON with schema: title, source_url, summary_text, word_count, provider, model, timestamp, processing_time_ms.
+Update summarization output from markdown to structured JSON with schema: title, source_url, feed_name, summary_text, word_count, provider, model, timestamp, processing_time_ms.
 
 - Update `summarize_content()` to write JSON instead of markdown
 - JSON schema matches PRD requirement
@@ -162,7 +163,7 @@ Acceptance: `uv run pytest -m integration` passes
 | 0 | Fetcher/extractor feed folders | tests/collect/, tests/pipeline/ | Feed-organized output directories |
 | 1 | Per-stage provider config | tests/test_config.py | Stage-specific provider resolution |
 | 2 | `lens enrich` CLI | tests/test_cli.py | Enrichment-only command |
-| 3 | Enrichment orchestrator | tests/pipeline/test_pipeline.py | State-aware enrichment with failure isolation |
+| 3 | src/lens/pipeline/enrichment.py | tests/pipeline/test_enrichment.py | State-aware enrichment with failure isolation |
 | 4 | Structured JSON output | tests/enrich/test_summarizer.py | JSON schema with metadata |
 | 5 | Enrichment logging | tests/enrich/, tests/pipeline/ | Per-call metadata in logs |
 | 6 | E2E integration test | tests/integration/ | Full enrichment against pre-collected content |
