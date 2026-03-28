@@ -219,12 +219,14 @@ class TestRunEnrichment:
         provider = _make_mock_provider("This is the summary.")
         await run_enrichment(config, provider, concurrency=5)
 
-        json_files = list((tmp_data_dir / "processed").glob("*.json"))
+        json_files = list((tmp_data_dir / "processed").rglob("*.json"))
         assert len(json_files) >= 1
 
         data = json.loads(json_files[0].read_text())
         assert "summary_text" in data
         assert data["summary_text"] == "This is the summary."
+        # Should be in a feed subdirectory
+        assert json_files[0].parent.name == "test"
 
     async def test_summary_json_has_full_schema(self, tmp_data_dir: Path) -> None:
         """JSON output contains all required fields from spec."""
@@ -254,7 +256,7 @@ class TestRunEnrichment:
 
         await run_enrichment(config, provider, concurrency=5)
 
-        json_files = list((tmp_data_dir / "processed").glob("*.json"))
+        json_files = list((tmp_data_dir / "processed").rglob("*.json"))
         data = json.loads(json_files[0].read_text())
 
         required_fields = [

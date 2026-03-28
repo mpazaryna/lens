@@ -118,8 +118,11 @@ async def run_enrichment(
                 run_log, url=item["url"], status="summarized", stage_time=stage_time
             )
 
-            # Write structured JSON output
-            out_path = config.processed_dir / f"{item_id}.json"
+            # Write structured JSON output to feed subdirectory
+            feed_name = item.get("feed", "unknown")
+            feed_out_dir = config.processed_dir / feed_name
+            feed_out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = feed_out_dir / f"{item_id}.json"
             output = {
                 "title": item.get("title", ""),
                 "source_url": item["url"],
