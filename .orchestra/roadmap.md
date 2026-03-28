@@ -40,7 +40,7 @@ Adds LLM-powered summarization, classification, and enrichment as a separate lay
 
 - PRD: [.orchestra/work/enrichment-pipeline/prd.md](.orchestra/work/enrichment-pipeline/prd.md)
 - Dependency: Core Pipeline
-- Status: Not Started
+- Status: In Progress
 
 ### Scaling Spike
 
