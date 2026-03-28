@@ -53,7 +53,7 @@ Write first in `tests/test_config.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/test_config.py` green
 
-### Step 2: `lens enrich` CLI command
+### Step 2: `lens enrich` CLI command — ticket: 86e0m77j4
 
 Add a `lens enrich` command that runs only the enrichment pipeline against previously collected content. Reads items at `extracted` status from the state tracker and processes them through summarization.
 

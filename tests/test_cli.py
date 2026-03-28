@@ -89,3 +89,74 @@ def _make_pipeline_result(**kwargs):
     from lens.pipeline.orchestrator import PipelineResult
 
     return PipelineResult(**kwargs)
+
+
+class TestEnrichCommand:
+    """Tests for the lens enrich CLI command."""
+
+    def test_enrich_runs_enrichment_only(self, tmp_data_dir: Path) -> None:
+        """lens enrich invokes run_enrichment, not run_collection."""
+        runner = CliRunner()
+        with patch("lens.cli.run_enrichment", new_callable=AsyncMock) as mock_enrich:
+            mock_enrich.return_value = _make_pipeline_result()
+            result = runner.invoke(
+                cli,
+                ["enrich", "--data-dir", str(tmp_data_dir)],
+                env={"LENS_PROVIDER": "ollama"},
+            )
+
+        assert result.exit_code == 0
+        mock_enrich.assert_awaited_once()
+
+    def test_enrich_with_ollama_no_api_key(self, tmp_data_dir: Path) -> None:
+        """Ollama provider does not require API key."""
+        runner = CliRunner()
+        with patch("lens.cli.run_enrichment", new_callable=AsyncMock) as mock_enrich:
+            mock_enrich.return_value = _make_pipeline_result()
+            result = runner.invoke(
+                cli,
+                ["enrich", "--data-dir", str(tmp_data_dir)],
+                env={"LENS_PROVIDER": "ollama", "LENS_API_KEY": "", "ANTHROPIC_API_KEY": ""},
+            )
+
+        assert result.exit_code == 0
+
+    def test_enrich_cloud_requires_api_key(self, tmp_data_dir: Path) -> None:
+        """Cloud provider without API key raises error."""
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            ["enrich", "--data-dir", str(tmp_data_dir)],
+            env={"LENS_PROVIDER": "anthropic", "LENS_API_KEY": "", "ANTHROPIC_API_KEY": ""},
+        )
+
+        assert result.exit_code != 0
+
+    def test_enrich_retry_failed_flag(self, tmp_data_dir: Path) -> None:
+        """--retry-failed flag is accepted and passed through."""
+        runner = CliRunner()
+        with patch("lens.cli.run_enrichment", new_callable=AsyncMock) as mock_enrich:
+            mock_enrich.return_value = _make_pipeline_result()
+            result = runner.invoke(
+                cli,
+                ["enrich", "--data-dir", str(tmp_data_dir), "--retry-failed"],
+                env={"LENS_PROVIDER": "ollama"},
+            )
+
+        assert result.exit_code == 0
+        call_kwargs = mock_enrich.call_args[1]
+        assert call_kwargs.get("retry_failed") is True
+
+    def test_enrich_output_includes_counts(self, tmp_data_dir: Path) -> None:
+        """Output includes enrichment counts."""
+        runner = CliRunner()
+        with patch("lens.cli.run_enrichment", new_callable=AsyncMock) as mock_enrich:
+            mock_enrich.return_value = _make_pipeline_result(articles_summarized=7)
+            result = runner.invoke(
+                cli,
+                ["enrich", "--data-dir", str(tmp_data_dir)],
+                env={"LENS_PROVIDER": "ollama"},
+            )
+
+        assert result.exit_code == 0
+        assert "7" in result.output

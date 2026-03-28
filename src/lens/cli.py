@@ -8,9 +8,9 @@ from pathlib import Path
 
 import click
 
-from lens.config import load_config
+from lens.config import load_config, resolve_stage_provider
 from lens.errors import ConfigError
-from lens.pipeline import run_collection, run_pipeline
+from lens.pipeline import run_collection, run_enrichment, run_pipeline
 from lens.providers import create_provider
 
 
@@ -134,6 +134,63 @@ def collect(
     click.echo(f"   Feeds found: {result.feeds_found}")
     click.echo(f"   Articles fetched: {result.articles_fetched}")
     click.echo(f"   Articles extracted: {result.articles_extracted}")
+    click.echo(f"   Errors: {len(result.errors)}")
+    click.echo(f"   Elapsed: {result.elapsed_seconds:.1f}s")
+
+    if result.errors and verbose:
+        click.echo("\nErrors:")
+        for err in result.errors:
+            click.echo(f"   - {err}")
+
+
+@cli.command()
+@click.option("--concurrency", default=5, help="Max concurrent LLM calls.")
+@click.option("--verbose", is_flag=True, help="Enable verbose output.")
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+@click.option("--retry-failed", is_flag=True, help="Retry previously failed items.")
+def enrich(
+    concurrency: int,
+    verbose: bool,
+    data_dir: Path | None,
+    retry_failed: bool,
+) -> None:
+    """Run enrichment only: summarize previously collected content (requires LLM)."""
+    config = load_config(data_dir_override=data_dir)
+    _configure_logging("debug" if verbose else config.log_level)
+
+    stage_config = resolve_stage_provider("summarize")
+    if stage_config["provider"] != "ollama" and not stage_config["api_key"]:
+        raise ConfigError(
+            f"API key required for {stage_config['provider']}. "
+            "Set LENS_API_KEY or LENS_SUMMARIZE_API_KEY. Not needed for Ollama."
+        )
+
+    provider = create_provider(
+        provider=stage_config["provider"],
+        model=stage_config["model"],
+        api_key=stage_config["api_key"],
+        base_url=stage_config["base_url"],
+    )
+
+    click.echo("Lens Enrichment")
+    click.echo("================")
+    click.echo(f"Data directory: {config.data_dir}")
+    click.echo(f"Provider: {stage_config['provider']}")
+    click.echo(f"Model: {stage_config['model']}")
+    click.echo("")
+
+    result = asyncio.run(
+        run_enrichment(
+            config=config,
+            provider=provider,
+            concurrency=concurrency,
+            retry_failed=retry_failed,
+        )
+    )
+
+    click.echo("")
+    click.echo("Enrichment complete!")
+    click.echo(f"   Articles summarized: {result.articles_summarized}")
     click.echo(f"   Errors: {len(result.errors)}")
     click.echo(f"   Elapsed: {result.elapsed_seconds:.1f}s")
 
