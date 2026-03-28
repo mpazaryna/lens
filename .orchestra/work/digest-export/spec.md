@@ -56,7 +56,7 @@ Write first in `tests/test_cli.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/test_cli.py` green
 
-### Step 3: Export formatter
+### Step 3: Export formatter — ticket: 86e0m8kpk
 
 Export all summaries as structured output. Default format is JSON (one file per feed with article array). Obsidian format writes individual markdown notes with YAML frontmatter.
 
