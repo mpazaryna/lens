@@ -87,7 +87,7 @@ Write first in `tests/test_cli.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/ -k cli` green
 
-### Step 5: Pipeline recovery and retry
+### Step 5: Pipeline recovery and retry — ticket: 86e0m6wpb
 
 Implement stage-aware resumption and failed item retry. On a normal run, the orchestrator skips items that have already reached a given stage. With `--retry-failed`, failed items are reset and reprocessed.
 

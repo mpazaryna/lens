@@ -24,7 +24,30 @@ from lens.pipeline.orchestrator import (
     fetch_feed_items,
     run_collection,
 )
-from lens.pipeline.state import item_id_from_url, load_state
+from lens.pipeline.state import item_id_from_url, load_state, save_state
+
+SAMPLE_OPML = """<?xml version="1.0"?>
+<opml version="2.0"><body>
+  <outline text="Tech" title="Tech">
+    <outline type="rss" text="Test" title="Test"
+             xmlUrl="https://example.com/feed.xml"/>
+  </outline>
+</body></opml>"""
+
+
+def _make_state_item(url: str, status: str, **kwargs) -> dict:
+    return {
+        "url": url,
+        "title": url.split("/")[-1],
+        "feed": "Test",
+        "status": status,
+        "discovered_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z",
+        "stage_times": {},
+        "error": None,
+        "retry_count": 0,
+        **kwargs,
+    }
 
 
 def _make_config(tmp_data_dir: Path) -> Config:
@@ -290,3 +313,187 @@ class TestRunCollection:
         assert len(state) == 2
         item_id_a2 = item_id_from_url("https://example.com/a2")
         assert item_id_a2 in state
+
+
+@pytest.mark.asyncio
+class TestPipelineRecoveryAndRetry:
+    """Tests for stage-aware resumption and --retry-failed."""
+
+    async def test_retry_failed_resets_failed_items(self, tmp_data_dir: Path) -> None:
+        """--retry-failed resets failed items to new for reprocessing."""
+        config = _make_config(tmp_data_dir)
+        (tmp_data_dir / "opml" / "test.opml").write_text(SAMPLE_OPML)
+
+        item_id = item_id_from_url("https://example.com/a1")
+        save_state(
+            config.state_path,
+            {
+                item_id: _make_state_item(
+                    "https://example.com/a1",
+                    "failed",
+                    error="Connection refused",
+                    retry_count=1,
+                ),
+            },
+        )
+
+        feed = Feed(
+            title="Test",
+            link="https://example.com",
+            description="",
+            items=[
+                FeedItem(
+                    title="A1",
+                    link="https://example.com/a1",
+                    description="",
+                    pub_date="",
+                    guid="a1",
+                )
+            ],
+        )
+
+        with (
+            patch("lens.pipeline.orchestrator.fetch_feeds") as mock_feeds,
+            patch("lens.pipeline.orchestrator.fetch_articles") as mock_fetch,
+        ):
+            mock_feeds.return_value = [("https://example.com/feed.xml", feed)]
+            mock_fetch.return_value = []
+            await run_collection(config, concurrency=5, retry_failed=True)
+
+        state = load_state(config.state_path)
+        # Item should have been reset from failed and reprocessed
+        assert state[item_id]["status"] != "failed"
+        assert state[item_id]["error"] is None
+
+    async def test_retry_failed_does_not_affect_non_failed(self, tmp_data_dir: Path) -> None:
+        """--retry-failed leaves non-failed items unchanged."""
+        config = _make_config(tmp_data_dir)
+        (tmp_data_dir / "opml" / "test.opml").write_text(SAMPLE_OPML)
+
+        item_id = item_id_from_url("https://example.com/a1")
+        save_state(
+            config.state_path,
+            {
+                item_id: _make_state_item("https://example.com/a1", "extracted"),
+            },
+        )
+
+        feed = Feed(
+            title="Test",
+            link="https://example.com",
+            description="",
+            items=[
+                FeedItem(
+                    title="A1",
+                    link="https://example.com/a1",
+                    description="",
+                    pub_date="",
+                    guid="a1",
+                )
+            ],
+        )
+
+        with (
+            patch("lens.pipeline.orchestrator.fetch_feeds") as mock_feeds,
+            patch("lens.pipeline.orchestrator.fetch_articles") as mock_fetch,
+        ):
+            mock_feeds.return_value = [("https://example.com/feed.xml", feed)]
+            mock_fetch.return_value = []
+            await run_collection(config, concurrency=5, retry_failed=True)
+
+        state = load_state(config.state_path)
+        assert state[item_id]["status"] == "extracted"
+
+    async def test_fetched_items_skip_to_extraction(self, tmp_data_dir: Path) -> None:
+        """Items at fetched status skip fetch and go to extraction."""
+        config = _make_config(tmp_data_dir)
+        (tmp_data_dir / "opml" / "test.opml").write_text(SAMPLE_OPML)
+
+        item_id = item_id_from_url("https://example.com/a1")
+        save_state(
+            config.state_path,
+            {
+                item_id: _make_state_item("https://example.com/a1", "fetched"),
+            },
+        )
+
+        feed = Feed(
+            title="Test",
+            link="https://example.com",
+            description="",
+            items=[
+                FeedItem(
+                    title="A1",
+                    link="https://example.com/a1",
+                    description="",
+                    pub_date="",
+                    guid="a1",
+                )
+            ],
+        )
+
+        with (
+            patch("lens.pipeline.orchestrator.fetch_feeds") as mock_feeds,
+            patch("lens.pipeline.orchestrator.fetch_articles") as mock_fetch,
+        ):
+            mock_feeds.return_value = [("https://example.com/feed.xml", feed)]
+            mock_fetch.return_value = []
+            await run_collection(config, concurrency=5)
+
+        # fetch_articles should not be called for this URL (already fetched)
+        if mock_fetch.called:
+            urls = mock_fetch.call_args[0][0]
+            assert "https://example.com/a1" not in urls
+
+        state = load_state(config.state_path)
+        assert state[item_id]["status"] == "extracted"
+
+    async def test_failed_retry_increments_count(self, tmp_data_dir: Path) -> None:
+        """A failed item that fails again on retry gets retry_count incremented."""
+        config = _make_config(tmp_data_dir)
+        (tmp_data_dir / "opml" / "test.opml").write_text(SAMPLE_OPML)
+
+        from lens.collect.fetcher import FetchResult
+
+        item_id = item_id_from_url("https://example.com/a1")
+        save_state(
+            config.state_path,
+            {
+                item_id: _make_state_item(
+                    "https://example.com/a1",
+                    "failed",
+                    error="Timeout",
+                    retry_count=2,
+                ),
+            },
+        )
+
+        feed = Feed(
+            title="Test",
+            link="https://example.com",
+            description="",
+            items=[
+                FeedItem(
+                    title="A1",
+                    link="https://example.com/a1",
+                    description="",
+                    pub_date="",
+                    guid="a1",
+                )
+            ],
+        )
+
+        with (
+            patch("lens.pipeline.orchestrator.fetch_feeds") as mock_feeds,
+            patch("lens.pipeline.orchestrator.fetch_articles") as mock_fetch,
+        ):
+            mock_feeds.return_value = [("https://example.com/feed.xml", feed)]
+            # Fetch fails again
+            mock_fetch.return_value = [
+                FetchResult(url="https://example.com/a1", success=False, error="Timeout again")
+            ]
+            await run_collection(config, concurrency=5, retry_failed=True)
+
+        state = load_state(config.state_path)
+        assert state[item_id]["status"] == "failed"
+        assert state[item_id]["retry_count"] == 3
