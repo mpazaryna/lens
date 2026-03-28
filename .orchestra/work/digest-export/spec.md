@@ -11,7 +11,7 @@ Steps are ordered by dependency. All work follows strict TDD with pytest. For ea
 
 ## Steps
 
-### Step 1: Digest generator
+### Step 1: Digest generator — ticket: 86e0m8jx8
 
 Read processed JSON from `{data_dir}/processed/{feed}/` and generate a per-feed markdown briefing. Articles sorted by word count descending (longer = more substantial). Only includes items at `summarized` status. Overwrites previous digest on each run.
 
