@@ -31,3 +31,5 @@ data/extracted/
 data/processed/
 data/ranked/
 data/seen.json
+data/state.json
+data/logs/
