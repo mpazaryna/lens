@@ -5,10 +5,12 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+import ssl
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import aiohttp
+import certifi
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -92,7 +94,9 @@ async def fetch_articles(
                 logger.warning("Write failed: %s: %s", dest, e)
                 return FetchResult(url=url, success=False, error=str(e))
 
-    async with aiohttp.ClientSession() as session:
+    ssl_ctx = ssl.create_default_context(cafile=certifi.where())
+    connector = aiohttp.TCPConnector(ssl=ssl_ctx)
+    async with aiohttp.ClientSession(connector=connector) as session:
         async with asyncio.TaskGroup() as tg:
             tasks = [tg.create_task(_fetch_one(url, session)) for url in urls]
         results = [t.result() for t in tasks]

@@ -133,7 +133,7 @@ Write first in `tests/pipeline/test_runlog.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/pipeline/test_runlog.py` green
 
-### Step 7: E2E integration test
+### Step 7: E2E integration test — ticket: 86e0m6xna
 
 A single integration test that exercises the full collection pipeline against real RSS feeds. Marked with `@pytest.mark.integration` so it's excluded from normal test runs.
 

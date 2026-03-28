@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import ssl
 from dataclasses import dataclass, field
 
 import aiohttp
+import certifi
 import feedparser
 
 from lens.errors import FeedFetchError, FeedParseError
@@ -56,7 +58,8 @@ async def fetch_feed(
     """
     own_session = session is None
     if own_session:
-        session = aiohttp.ClientSession()
+        ssl_ctx = ssl.create_default_context(cafile=certifi.where())
+        session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_ctx))
 
     try:
         async with session.get(url, timeout=aiohttp.ClientTimeout(total=timeout)) as resp:
@@ -125,7 +128,9 @@ async def fetch_feeds(
                 logger.warning("Feed failed: %s: %s", url, e)
                 results.append((url, e))
 
-    async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
+    ssl_ctx = ssl.create_default_context(cafile=certifi.where())
+    connector = aiohttp.TCPConnector(ssl=ssl_ctx)
+    async with aiohttp.ClientSession(connector=connector) as session, asyncio.TaskGroup() as tg:
         for url in urls:
             tg.create_task(_fetch_one(url, session))
 
