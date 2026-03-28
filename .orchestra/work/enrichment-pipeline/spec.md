@@ -73,7 +73,7 @@ Write first in `tests/test_cli.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/test_cli.py` green
 
-### Step 3: Enrichment orchestrator with state tracker
+### Step 3: Enrichment orchestrator with state tracker — ticket: 86e0m791f
 
 Create `run_enrichment()` function that processes items at `extracted` status through summarization, updating the state tracker to `summarized` on success or `failed` on error. Mirrors `run_collection()` pattern.
 
