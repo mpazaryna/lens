@@ -32,7 +32,7 @@ Derive from [gherkin.md](gherkin.md) -- Step 0 scenarios (write Gherkin before i
 
 Acceptance: all tests pass; `uv run lens collect` produces feed-organized output
 
-### Step 1: Per-stage provider configuration (ADR-004)
+### Step 1: Per-stage provider configuration (ADR-004) — ticket: 86e0m75gr
 
 Implement the per-stage provider config resolution chain. Each LLM stage can use a different provider/model. Falls back to default when no stage-specific config is set.
 

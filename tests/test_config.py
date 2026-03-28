@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from lens.config import load_config
+from lens.config import load_config, resolve_stage_provider
 
 if TYPE_CHECKING:
     import pytest
@@ -115,3 +115,70 @@ class TestOpmlPathResolution:
         monkeypatch.setenv("LENS_OPML_PATH", "/etc/lens/my-feeds.opml")
         config = load_config(opml_override=Path("/tmp/test.opml"))
         assert config.opml_path == Path("/tmp/test.opml")
+
+
+class TestPerStageProviderResolution:
+    """Feature: Per-stage provider resolution (ADR-004)."""
+
+    def test_default_provider_when_no_stage_config(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Default provider used when no stage-specific config is set."""
+        monkeypatch.setenv("LENS_PROVIDER", "ollama")
+        monkeypatch.setenv("LENS_MODEL", "llama3.2")
+        monkeypatch.delenv("LENS_SUMMARIZE_PROVIDER", raising=False)
+        monkeypatch.delenv("LENS_SUMMARIZE_MODEL", raising=False)
+
+        result = resolve_stage_provider("summarize")
+        assert result["provider"] == "ollama"
+        assert result["model"] == "llama3.2"
+
+    def test_stage_provider_overrides_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Stage-specific provider overrides default."""
+        monkeypatch.setenv("LENS_PROVIDER", "ollama")
+        monkeypatch.setenv("LENS_SUMMARIZE_PROVIDER", "anthropic")
+        monkeypatch.setenv("LENS_SUMMARIZE_MODEL", "claude-haiku-4-5-20251001")
+
+        result = resolve_stage_provider("summarize")
+        assert result["provider"] == "anthropic"
+        assert result["model"] == "claude-haiku-4-5-20251001"
+
+    def test_partial_override_inherits_provider(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Partial override: set model but not provider, inherits default."""
+        monkeypatch.setenv("LENS_PROVIDER", "ollama")
+        monkeypatch.setenv("LENS_MODEL", "llama3.2")
+        monkeypatch.setenv("LENS_SUMMARIZE_MODEL", "devstral:24b")
+        monkeypatch.delenv("LENS_SUMMARIZE_PROVIDER", raising=False)
+
+        result = resolve_stage_provider("summarize")
+        assert result["provider"] == "ollama"
+        assert result["model"] == "devstral:24b"
+
+    def test_stage_api_key_overrides_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Stage-specific API key overrides default."""
+        monkeypatch.setenv("LENS_API_KEY", "default-key")
+        monkeypatch.setenv("LENS_SUMMARIZE_API_KEY", "summarize-key")
+
+        result = resolve_stage_provider("summarize")
+        assert result["api_key"] == "summarize-key"
+
+    def test_independent_stage_config(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Summarize and rank resolve independently."""
+        monkeypatch.setenv("LENS_PROVIDER", "ollama")
+        monkeypatch.setenv("LENS_SUMMARIZE_PROVIDER", "ollama")
+        monkeypatch.setenv("LENS_SUMMARIZE_MODEL", "llama3.2")
+        monkeypatch.setenv("LENS_RANK_PROVIDER", "anthropic")
+        monkeypatch.setenv("LENS_RANK_MODEL", "claude-sonnet-4-20250514")
+
+        summarize = resolve_stage_provider("summarize")
+        rank = resolve_stage_provider("rank")
+        assert summarize["provider"] == "ollama"
+        assert rank["provider"] == "anthropic"
+        assert summarize["model"] != rank["model"]
+
+    def test_default_api_key_fallback(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """API key falls back through chain: stage > LENS_API_KEY > ANTHROPIC_API_KEY."""
+        monkeypatch.delenv("LENS_SUMMARIZE_API_KEY", raising=False)
+        monkeypatch.delenv("LENS_API_KEY", raising=False)
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "anthropic-fallback")
+
+        result = resolve_stage_provider("summarize")
+        assert result["api_key"] == "anthropic-fallback"

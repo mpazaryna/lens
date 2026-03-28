@@ -141,3 +141,26 @@ def load_config(
         log_level=os.getenv("LENS_LOG_LEVEL", "info"),
         opml_path=opml_path,
     )
+
+
+def resolve_stage_provider(stage: str) -> dict[str, str]:
+    """Resolve provider config for a specific LLM stage (ADR-004).
+
+    Resolution chain per field:
+        LENS_{STAGE}_{FIELD} > LENS_{FIELD} > default
+
+    Args:
+        stage: Stage name (e.g., 'summarize', 'rank').
+
+    Returns:
+        Dict with 'provider', 'model', 'api_key', 'base_url' keys.
+    """
+    prefix = f"LENS_{stage.upper()}_"
+    default_api_key = os.getenv("LENS_API_KEY", os.getenv("ANTHROPIC_API_KEY", ""))
+
+    return {
+        "provider": os.getenv(f"{prefix}PROVIDER", os.getenv("LENS_PROVIDER", "anthropic")),
+        "model": os.getenv(f"{prefix}MODEL", os.getenv("LENS_MODEL", "claude-sonnet-4-20250514")),
+        "api_key": os.getenv(f"{prefix}API_KEY", default_api_key),
+        "base_url": os.getenv(f"{prefix}BASE_URL", os.getenv("LENS_BASE_URL")),
+    }
