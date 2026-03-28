@@ -248,6 +248,7 @@ async def run_collection(
     concurrency: int = 5,
     overwrite: bool = False,
     category_filter: str | None = None,
+    retry_failed: bool = False,
 ) -> PipelineResult:
     """Execute the collection pipeline (feeds -> fetch -> extract).
 
@@ -260,6 +261,7 @@ async def run_collection(
         concurrency: Max concurrent operations per phase.
         overwrite: Whether to overwrite existing files.
         category_filter: Optional OPML category filter.
+        retry_failed: Reset failed items and reprocess them.
 
     Returns:
         PipelineResult with counts and timing.
@@ -267,6 +269,14 @@ async def run_collection(
     start = time.monotonic()
     result = PipelineResult()
     state = load_state(config.state_path)
+
+    # Reset failed items if requested
+    if retry_failed:
+        failed = items_at_status(state, "failed")
+        for item_id, item in failed.items():
+            state[item_id] = {**item, "status": "new", "error": None}
+        if failed:
+            logger.info("Reset %d failed items for retry", len(failed))
 
     # Phase 1: Parse OPML and fetch feeds
     logger.info("Phase 1: Fetching feeds...")
