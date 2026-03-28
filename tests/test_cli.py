@@ -160,3 +160,41 @@ class TestEnrichCommand:
 
         assert result.exit_code == 0
         assert "7" in result.output
+
+
+class TestDigestCommand:
+    """Tests for the lens digest CLI command."""
+
+    def test_digest_generates_files(self, tmp_data_dir: Path) -> None:
+        """lens digest invokes digest generation."""
+        runner = CliRunner()
+        with patch("lens.cli.generate_all_digests") as mock_digest:
+            mock_digest.return_value = [tmp_data_dir / "digest" / "test.md"]
+            result = runner.invoke(cli, ["digest", "--data-dir", str(tmp_data_dir)])
+
+        assert result.exit_code == 0
+        mock_digest.assert_called_once()
+
+    def test_digest_passes_data_dir(self, tmp_data_dir: Path) -> None:
+        """--data-dir flag is passed through."""
+        runner = CliRunner()
+        with patch("lens.cli.generate_all_digests") as mock_digest:
+            mock_digest.return_value = []
+            result = runner.invoke(cli, ["digest", "--data-dir", str(tmp_data_dir)])
+
+        assert result.exit_code == 0
+        call_kwargs = mock_digest.call_args[1]
+        assert str(tmp_data_dir) in str(call_kwargs["processed_dir"])
+
+    def test_digest_no_api_key_required(self, tmp_data_dir: Path) -> None:
+        """No API key needed for digest."""
+        runner = CliRunner()
+        with patch("lens.cli.generate_all_digests") as mock_digest:
+            mock_digest.return_value = []
+            result = runner.invoke(
+                cli,
+                ["digest", "--data-dir", str(tmp_data_dir)],
+                env={"LENS_API_KEY": "", "ANTHROPIC_API_KEY": ""},
+            )
+
+        assert result.exit_code == 0

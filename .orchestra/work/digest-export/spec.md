@@ -36,7 +36,7 @@ Derive from [gherkin.md](gherkin.md) -- Step 1 scenarios. Write first in `tests/
 
 Acceptance: all tests pass; `uv run pytest tests/output/test_digest.py` green
 
-### Step 2: `lens digest` CLI command
+### Step 2: `lens digest` CLI command — ticket: 86e0m8kac
 
 Add a `lens digest` command that generates digests from existing processed data. No LLM, no network -- reads JSON, writes markdown.
 

@@ -10,6 +10,7 @@ import click
 
 from lens.config import load_config, resolve_stage_provider
 from lens.errors import ConfigError
+from lens.output.digest import generate_all_digests
 from lens.pipeline import run_collection, run_enrichment, run_pipeline
 from lens.providers import create_provider
 
@@ -198,6 +199,25 @@ def enrich(
         click.echo("\nErrors:")
         for err in result.errors:
             click.echo(f"   - {err}")
+
+
+@cli.command()
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+@click.option("--verbose", is_flag=True, help="Enable verbose output.")
+def digest(data_dir: Path | None, verbose: bool) -> None:
+    """Generate per-feed markdown digests from processed data (no LLM)."""
+    config = load_config(data_dir_override=data_dir)
+    _configure_logging("debug" if verbose else config.log_level)
+
+    paths = generate_all_digests(
+        processed_dir=config.processed_dir,
+        digest_dir=config.data_dir / "digest",
+    )
+
+    click.echo("Digest complete!")
+    for path in paths:
+        click.echo(f"   {path.name}")
+    click.echo(f"   {len(paths)} feeds")
 
 
 @cli.command()
