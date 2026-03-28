@@ -1,7 +1,7 @@
 # Core Pipeline (Collection) -- Execution Spec
 
 **PRD:** [Core Pipeline](prd.md)
-**Status:** Draft
+**Status:** Complete
 
 ## Approach
 

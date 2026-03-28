@@ -32,7 +32,7 @@ Builds a reliable content ingestion system that discovers, fetches, and extracts
 
 - PRD: [.orchestra/work/core-pipeline/prd.md](.orchestra/work/core-pipeline/prd.md)
 - Dependency: --
-- Status: In Progress
+- Status: Complete
 
 ### Enrichment Pipeline
 
