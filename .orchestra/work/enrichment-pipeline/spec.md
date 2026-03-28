@@ -1,7 +1,7 @@
 # Enrichment Pipeline -- Execution Spec
 
 **PRD:** [Enrichment Pipeline](prd.md)
-**Status:** Draft
+**Status:** Complete
 
 ## Approach
 
