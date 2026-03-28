@@ -109,7 +109,7 @@ Write first in `tests/pipeline/test_pipeline.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/pipeline/` green
 
-### Step 6: Run log output
+### Step 6: Run log output — ticket: 86e0m6xeg
 
 Each pipeline run writes a structured log file to `{data_dir}/logs/` with per-item timing, stage transitions, and error details. Filename includes ISO timestamp for chronological ordering.
 
