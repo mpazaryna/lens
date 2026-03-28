@@ -42,7 +42,7 @@ Derive from [gherkin.md](gherkin.md) -- Step 2 scenarios. Write first in `tests/
 
 Acceptance: all scenarios implemented as tests; `uv run pytest tests/pipeline/test_state.py` green
 
-### Step 3: Wire state tracker into orchestrator
+### Step 3: Wire state tracker into orchestrator — ticket: 86e0m6v79
 
 Replace seen ledger usage in the orchestrator with the state tracker. Each stage queries the tracker for items at the right status, processes them, and updates status on completion or failure. Failed items are marked with error and retry_count.
 
@@ -65,7 +65,7 @@ Write first in `tests/pipeline/test_pipeline.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/pipeline/` green; old seen ledger tests removed or migrated
 
-### Step 4: `lens collect` CLI command
+### Step 4: `lens collect` CLI command — ticket: 86e0m6uuj
 
 Add a `lens collect` command that runs only the collection pipeline (feeds -> fetch -> extract) without any LLM enrichment. This is the primary entry point for collection, separate from `lens run` which does the full pipeline.
 
