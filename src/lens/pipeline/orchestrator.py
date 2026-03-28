@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from lens.collect.extractor import ExtractionResultItem, extract_articles
+from lens.collect.feed_utils import sanitize_feed_name
 from lens.collect.fetcher import FetchResult, fetch_articles
 from lens.collect.opml import parse_opml
 from lens.collect.rss import Feed, FeedItem, fetch_feeds
@@ -58,12 +59,17 @@ async def fetch_feed_items(
     config: Config,
     category_filter: str | None,
     result: PipelineResult,
-) -> list[FeedItem]:
-    """Phase 1: Parse OPML files and fetch all feed items."""
+) -> tuple[list[FeedItem], dict[str, str]]:
+    """Phase 1: Parse OPML files and fetch all feed items.
+
+    Returns:
+        Tuple of (all_items, url_to_feed) where url_to_feed maps
+        article URLs to their sanitized feed name.
+    """
     opml_files = sorted(config.opml_dir.glob("*.opml"))
     if not opml_files:
         result.errors.append(f"No OPML files found in {config.opml_dir}")
-        return []
+        return [], {}
 
     all_feed_sources = []
     for opml_path in opml_files:
@@ -72,7 +78,7 @@ async def fetch_feed_items(
 
     if not all_feed_sources:
         result.errors.append("No feeds found in OPML files")
-        return []
+        return [], {}
 
     result.feeds_found = len(all_feed_sources)
     logger.info("Found %d feeds in %d OPML file(s)", len(all_feed_sources), len(opml_files))
@@ -81,10 +87,15 @@ async def fetch_feed_items(
     feed_results = await fetch_feeds(urls, concurrency=5)
 
     all_items: list[FeedItem] = []
+    url_to_feed: dict[str, str] = {}
     for url, feed_or_error in feed_results:
         if isinstance(feed_or_error, Exception):
             result.errors.append(f"Feed fetch failed: {url}: {feed_or_error}")
         else:
+            feed_name = sanitize_feed_name(feed_or_error.title)
+            for item in feed_or_error.items:
+                if item.link:
+                    url_to_feed[item.link] = feed_name
             all_items.extend(feed_or_error.items)
 
     # Save feed JSON
@@ -92,8 +103,8 @@ async def fetch_feed_items(
     for _url, feed_or_error in feed_results:
         if isinstance(feed_or_error, Feed):
             feed = feed_or_error
-            safe_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in feed.title)
-            feed_path = config.feeds_dir / f"{safe_name.lower()}.json"
+            safe_name = sanitize_feed_name(feed.title)
+            feed_path = config.feeds_dir / f"{safe_name}.json"
             feed_data = {
                 "title": feed.title,
                 "link": feed.link,
@@ -112,7 +123,7 @@ async def fetch_feed_items(
             feed_path.write_text(json.dumps(feed_data, indent=2))
 
     logger.info("%d total items across all feeds", len(all_items))
-    return all_items
+    return all_items, url_to_feed
 
 
 async def fetch_html(
@@ -121,19 +132,38 @@ async def fetch_html(
     result: PipelineResult,
     concurrency: int = 5,
     overwrite: bool = False,
+    url_to_feed: dict[str, str] | None = None,
 ) -> list[FetchResult]:
-    """Phase 2: Fetch HTML content for article URLs."""
-    fetch_results = await fetch_articles(
-        urls,
-        config.fetched_dir,
-        concurrency=concurrency,
-        overwrite=overwrite,
-    )
-    result.articles_fetched = sum(1 for r in fetch_results if r.success)
-    for r in fetch_results:
+    """Phase 2: Fetch HTML content for article URLs.
+
+    When url_to_feed is provided, articles are written into feed-named
+    subdirectories under fetched/.
+    """
+    all_results: list[FetchResult] = []
+
+    if url_to_feed:
+        # Group URLs by feed for subdirectory output
+        feed_to_urls: dict[str, list[str]] = {}
+        for url in urls:
+            feed_name = url_to_feed.get(url, "unknown")
+            feed_to_urls.setdefault(feed_name, []).append(url)
+
+        for feed_name, feed_urls in feed_to_urls.items():
+            output_dir = config.fetched_dir / feed_name
+            fetch_results = await fetch_articles(
+                feed_urls, output_dir, concurrency=concurrency, overwrite=overwrite
+            )
+            all_results.extend(fetch_results)
+    else:
+        all_results = await fetch_articles(
+            urls, config.fetched_dir, concurrency=concurrency, overwrite=overwrite
+        )
+
+    result.articles_fetched = sum(1 for r in all_results if r.success)
+    for r in all_results:
         if not r.success:
             result.errors.append(f"Fetch failed: {r.url}: {r.error}")
-    return fetch_results
+    return all_results
 
 
 def extract_content(
@@ -141,17 +171,30 @@ def extract_content(
     result: PipelineResult,
     overwrite: bool = False,
 ) -> list[ExtractionResultItem]:
-    """Phase 3: Extract HTML to clean text (no LLM)."""
-    extract_results = extract_articles(
-        config.fetched_dir,
-        config.extracted_dir,
-        overwrite=overwrite,
-    )
-    result.articles_extracted = sum(1 for _, r in extract_results if not isinstance(r, Exception))
-    for path, r in extract_results:
+    """Phase 3: Extract HTML to clean text (no LLM).
+
+    Walks both flat files in fetched/ and feed subdirectories (fetched/{feed}/).
+    Mirrors the subdirectory structure in extracted/.
+    """
+    all_results: list[ExtractionResultItem] = []
+
+    # Extract flat files in fetched/ (backward compat)
+    flat_results = extract_articles(config.fetched_dir, config.extracted_dir, overwrite=overwrite)
+    all_results.extend(flat_results)
+
+    # Extract from feed subdirectories
+    if config.fetched_dir.exists():
+        for sub_dir in sorted(config.fetched_dir.iterdir()):
+            if sub_dir.is_dir():
+                out_dir = config.extracted_dir / sub_dir.name
+                sub_results = extract_articles(sub_dir, out_dir, overwrite=overwrite)
+                all_results.extend(sub_results)
+
+    result.articles_extracted = sum(1 for _, r in all_results if not isinstance(r, Exception))
+    for path, r in all_results:
         if isinstance(r, Exception):
             result.errors.append(f"Extract failed: {path}: {r}")
-    return extract_results
+    return all_results
 
 
 async def summarize_content(
@@ -280,17 +323,23 @@ async def run_collection(
 
     # Phase 1: Parse OPML and fetch feeds
     logger.info("Phase 1: Fetching feeds...")
-    feed_items = await fetch_feed_items(config, category_filter, result)
+    feed_items, url_to_feed = await fetch_feed_items(config, category_filter, result)
 
     if not feed_items:
         result.elapsed_seconds = time.monotonic() - start
         return result
 
     # Discover new items in state tracker
-    discovery_items = [
-        {"url": item.link, "title": item.title, "feed": ""} for item in feed_items if item.link
+    discovery_list = [
+        {
+            "url": item.link,
+            "title": item.title,
+            "feed": url_to_feed.get(item.link, "unknown"),
+        }
+        for item in feed_items
+        if item.link
     ]
-    state = discover_items(state, discovery_items)
+    state = discover_items(state, discovery_list)
 
     # Phase 2: Fetch HTML for items at 'new' status
     new_items = items_at_status(state, "new")
@@ -299,12 +348,14 @@ async def run_collection(
     logger.info(
         "%d new, %d already processed",
         len(new_urls),
-        len(discovery_items) - len(new_urls),
+        len(discovery_list) - len(new_urls),
     )
 
     if new_urls:
         logger.info("Phase 2: Fetching %d articles...", len(new_urls))
-        fetch_results = await fetch_html(new_urls, config, result, concurrency, overwrite)
+        fetch_results = await fetch_html(
+            new_urls, config, result, concurrency, overwrite, url_to_feed
+        )
 
         # Update state per-item based on fetch results
         url_to_fetch = {r.url: r for r in fetch_results}

@@ -94,9 +94,10 @@ class TestFetchFeedItems:
     async def test_returns_empty_on_no_opml(self, tmp_data_dir: Path) -> None:
         config = _make_config(tmp_data_dir)
         result = PipelineResult()
-        items = await fetch_feed_items(config, None, result)
+        items, url_to_feed = await fetch_feed_items(config, None, result)
 
         assert items == []
+        assert url_to_feed == {}
         assert len(result.errors) == 1
         assert "No OPML" in result.errors[0]
 
@@ -132,11 +133,12 @@ class TestFetchFeedItems:
         with patch("lens.pipeline.orchestrator.fetch_feeds") as mock_fetch:
             mock_fetch.return_value = [("https://example.com/feed.xml", feed)]
             result = PipelineResult()
-            items = await fetch_feed_items(config, None, result)
+            items, url_to_feed = await fetch_feed_items(config, None, result)
 
         assert result.feeds_found == 1
         assert len(items) == 1
         assert items[0].title == "Article 1"
+        assert url_to_feed["https://example.com/a1"] == "test"
 
 
 @pytest.mark.asyncio
@@ -497,3 +499,69 @@ class TestPipelineRecoveryAndRetry:
         state = load_state(config.state_path)
         assert state[item_id]["status"] == "failed"
         assert state[item_id]["retry_count"] == 3
+
+
+class TestFeedOrganizedOutput:
+    """Tests for feed-organized output directories (Step 0)."""
+
+    @pytest.mark.asyncio
+    async def test_state_tracker_records_feed_name(self, tmp_data_dir: Path) -> None:
+        """Discovered items record the feed name in state."""
+        config = _make_config(tmp_data_dir)
+        (tmp_data_dir / "opml" / "test.opml").write_text(SAMPLE_OPML)
+
+        feed = Feed(
+            title="BBC Top Stories",
+            link="https://example.com",
+            description="",
+            items=[
+                FeedItem(
+                    title="A1",
+                    link="https://example.com/a1",
+                    description="",
+                    pub_date="",
+                    guid="a1",
+                )
+            ],
+        )
+
+        with (
+            patch("lens.pipeline.orchestrator.fetch_feeds") as mock_feeds,
+            patch("lens.pipeline.orchestrator.fetch_articles") as mock_fetch,
+        ):
+            mock_feeds.return_value = [("https://example.com/feed.xml", feed)]
+            mock_fetch.return_value = []
+            await run_collection(config, concurrency=5)
+
+        state = load_state(config.state_path)
+        item_id = item_id_from_url("https://example.com/a1")
+        assert state[item_id]["feed"] == "bbc-top-stories"
+
+    def test_extract_walks_subdirectories(self, tmp_data_dir: Path) -> None:
+        """Extraction finds HTML files in feed subdirectories."""
+        config = _make_config(tmp_data_dir)
+        feed_dir = tmp_data_dir / "fetched" / "bbc-top-stories"
+        feed_dir.mkdir(parents=True)
+        (feed_dir / "article.html").write_text(
+            "<html><body><h1>Test</h1><p>Content</p></body></html>"
+        )
+
+        result = PipelineResult()
+        extract_results = extract_content(config, result)
+
+        assert result.articles_extracted == 1
+        # Output should be in the feed subdirectory
+        out_path = extract_results[0][0]
+        assert "bbc-top-stories" in str(out_path)
+
+    def test_extract_still_handles_flat_files(self, tmp_data_dir: Path) -> None:
+        """Flat files in fetched/ (no subdirectory) are still extracted."""
+        config = _make_config(tmp_data_dir)
+        (tmp_data_dir / "fetched" / "legacy.html").write_text(
+            "<html><body><p>Legacy content</p></body></html>"
+        )
+
+        result = PipelineResult()
+        extract_content(config, result)
+
+        assert result.articles_extracted == 1
