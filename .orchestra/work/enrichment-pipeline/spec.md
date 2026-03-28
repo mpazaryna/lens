@@ -99,7 +99,7 @@ Write first in `tests/pipeline/test_pipeline.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/pipeline/` green
 
-### Step 4: Structured summarization output
+### Step 4: Structured summarization output — ticket: 86e0m7b95
 
 Update summarization output from markdown to structured JSON with schema: title, source_url, feed_name, summary_text, word_count, provider, model, timestamp, processing_time_ms.
 
@@ -118,7 +118,7 @@ Write first in `tests/enrich/test_summarizer.py`:
 
 Acceptance: all tests pass; `uv run pytest tests/enrich/` green
 
-### Step 5: Enrichment logging and observability
+### Step 5: Enrichment logging and observability — ticket: 86e0m7b98
 
 Add per-LLM-call metadata to structured logging: tokens in/out, latency, model, provider, cost estimate. Integrate run log output into enrichment runs.
 
@@ -136,7 +136,7 @@ Write first in `tests/enrich/test_summarizer.py` and `tests/pipeline/test_pipeli
 
 Acceptance: all tests pass; enrichment run produces a log file in `logs/`
 
-### Step 6: E2E enrichment integration test
+### Step 6: E2E enrichment integration test — ticket: 86e0m7b9a
 
 Integration test that exercises enrichment against pre-collected extracted text. Uses a mock or local LLM provider (Ollama if available, mock otherwise).
 

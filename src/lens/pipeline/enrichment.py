@@ -13,6 +13,13 @@ from typing import TYPE_CHECKING
 
 from lens.enrich.summarizer import summarize_article
 from lens.pipeline.orchestrator import PipelineResult
+from lens.pipeline.runlog import (
+    create_run_log,
+    finalize_run_log,
+    record_error,
+    record_item,
+    write_run_log,
+)
 from lens.pipeline.state import (
     items_at_status,
     load_state,
@@ -85,6 +92,7 @@ async def run_enrichment(
 
     logger.info("Enriching %d articles...", len(extracted))
     config.processed_dir.mkdir(parents=True, exist_ok=True)
+    run_log = create_run_log()
 
     for item_id, item in extracted.items():
         text = _find_extracted_text(config, item["url"], item.get("feed", ""))
@@ -101,6 +109,9 @@ async def run_enrichment(
         if summary_result.success and summary_result.summary:
             state[item_id] = transition_item(item, "summarized", stage_time=stage_time)
             result.articles_summarized += 1
+            run_log = record_item(
+                run_log, url=item["url"], status="summarized", stage_time=stage_time
+            )
 
             # Write structured JSON output
             out_path = config.processed_dir / f"{item_id}.json"
@@ -114,6 +125,8 @@ async def run_enrichment(
                 "model": summary_result.model or "",
                 "timestamp": state[item_id]["updated_at"],
                 "processing_time_ms": summary_result.processing_time_ms or 0,
+                "input_tokens": summary_result.usage.get("input_tokens", 0),
+                "output_tokens": summary_result.usage.get("output_tokens", 0),
             }
             out_path.write_text(json.dumps(output, indent=2))
         else:
@@ -121,7 +134,13 @@ async def run_enrichment(
                 item, "failed", error=summary_result.error or "Unknown error"
             )
             result.errors.append(f"Summary failed: {item['url']}: {summary_result.error}")
+            run_log = record_error(
+                run_log, url=item["url"], error=summary_result.error or "Unknown"
+            )
 
     save_state(config.state_path, state)
+    run_log = finalize_run_log(run_log)
+    write_run_log(config.logs_dir, run_log)
+
     result.elapsed_seconds = time.monotonic() - start
     return result

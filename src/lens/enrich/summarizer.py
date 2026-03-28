@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -28,6 +28,7 @@ class SummaryResult:
     model: str | None = None
     processing_time_ms: float | None = None
     error: str | None = None
+    usage: dict[str, int] = field(default_factory=dict)
 
 
 SUMMARIZE_PROMPT = """Summarize the following article in 2-3 concise paragraphs.
@@ -69,6 +70,7 @@ async def summarize_article(
             summary=response.text,
             model=provider.model_name,
             processing_time_ms=elapsed,
+            usage=response.usage,
         )
     except Exception as e:
         elapsed = (time.monotonic() - start) * 1000

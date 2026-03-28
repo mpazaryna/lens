@@ -225,3 +225,81 @@ class TestRunEnrichment:
         data = json.loads(json_files[0].read_text())
         assert "summary_text" in data
         assert data["summary_text"] == "This is the summary."
+
+    async def test_summary_json_has_full_schema(self, tmp_data_dir: Path) -> None:
+        """JSON output contains all required fields from spec."""
+        config = _make_config(tmp_data_dir)
+
+        extracted_dir = tmp_data_dir / "extracted" / "test-feed"
+        extracted_dir.mkdir(parents=True)
+        (extracted_dir / "article.md").write_text("# Test\n\nContent.")
+
+        item_id = item_id_from_url("https://example.com/a")
+        save_state(
+            config.state_path,
+            {
+                item_id: _make_state_item("https://example.com/a", "extracted", feed="test-feed"),
+            },
+        )
+
+        provider = AsyncMock()
+        provider.model_name = "llama3.2"
+        provider.complete = AsyncMock(
+            return_value=LLMResponse(
+                text="A summary.",
+                model="llama3.2",
+                usage={"input_tokens": 150, "output_tokens": 30},
+            )
+        )
+
+        await run_enrichment(config, provider, concurrency=5)
+
+        json_files = list((tmp_data_dir / "processed").glob("*.json"))
+        data = json.loads(json_files[0].read_text())
+
+        required_fields = [
+            "title",
+            "source_url",
+            "feed_name",
+            "summary_text",
+            "word_count",
+            "provider",
+            "model",
+            "timestamp",
+            "processing_time_ms",
+            "input_tokens",
+            "output_tokens",
+        ]
+        for field in required_fields:
+            assert field in data, f"Missing field: {field}"
+
+        assert data["feed_name"] == "test-feed"
+        assert data["model"] == "llama3.2"
+        assert data["input_tokens"] == 150
+        assert data["output_tokens"] == 30
+
+    async def test_run_log_written_after_enrichment(self, tmp_data_dir: Path) -> None:
+        """Enrichment run produces a log file in logs/."""
+        config = _make_config(tmp_data_dir)
+
+        extracted_dir = tmp_data_dir / "extracted" / "test"
+        extracted_dir.mkdir(parents=True)
+        (extracted_dir / "article.md").write_text("# Test\n\nContent.")
+
+        item_id = item_id_from_url("https://example.com/a")
+        save_state(
+            config.state_path,
+            {
+                item_id: _make_state_item("https://example.com/a", "extracted"),
+            },
+        )
+
+        provider = _make_mock_provider()
+        await run_enrichment(config, provider, concurrency=5)
+
+        log_files = list((tmp_data_dir / "logs").glob("*-run.json"))
+        assert len(log_files) >= 1
+
+        log_data = json.loads(log_files[0].read_text())
+        assert log_data["item_count"] >= 1
+        assert "elapsed_seconds" in log_data
