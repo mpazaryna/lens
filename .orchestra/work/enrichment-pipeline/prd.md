@@ -36,14 +36,16 @@ Part of the [Lens Roadmap](../../roadmap.md).
 
 | Material | Location | Status |
 |----------|----------|--------|
-| LLM summarization (existing) | src/lens/processing/summarizer.py | Done |
-| Summarizer tests (existing) | tests/processing/ | Done |
-| Provider registry (existing) | src/lens/providers/ | Done |
-| Per-stage provider config | src/lens/config.py | Not Started |
-| Enrichment orchestrator | src/lens/pipeline/ | Not Started |
-| Enrichment CLI commands | src/lens/cli.py | Not Started |
-| Enrichment state transitions | src/lens/pipeline/ | Not Started |
-| E2E enrichment test | tests/ | Not Started |
+| LLM summarization | src/lens/enrich/summarizer.py | Done |
+| Summarizer tests | tests/enrich/test_summarizer.py | Done |
+| Provider registry | src/lens/providers/ | Done |
+| Per-stage provider config | src/lens/config.py (resolve_stage_provider) | Done |
+| Enrichment orchestrator | src/lens/pipeline/enrichment.py | Done |
+| Enrichment CLI commands | src/lens/cli.py (enrich command) | Done |
+| Enrichment state transitions | src/lens/pipeline/state.py | Done |
+| Enrichment tests | tests/pipeline/test_enrichment.py | Done |
+| E2E enrichment test | tests/integration/test_enrichment_e2e.py | Done |
+| Feed-organized output | src/lens/collect/feed_utils.py | Done |
 
 ## References
 

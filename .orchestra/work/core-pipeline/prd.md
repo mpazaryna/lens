@@ -31,18 +31,18 @@ Part of the [Lens Roadmap](../../roadmap.md).
 
 | Material | Location | Status |
 |----------|----------|--------|
-| Feed parsing (OPML + RSS) | src/lens/feeds/ | Done |
-| Async HTML retrieval | src/lens/retrieval/fetcher.py | Done |
-| Content extraction | src/lens/extraction/extractor.py | Done |
+| Feed parsing (OPML + RSS) | src/lens/collect/opml.py, src/lens/collect/rss.py | Done |
+| Async HTML retrieval | src/lens/collect/fetcher.py | Done |
+| Content extraction | src/lens/collect/extractor.py | Done |
 | Pipeline orchestrator | src/lens/pipeline/orchestrator.py | Done |
 | Provider registry (Anthropic, OpenAI, Ollama) | src/lens/providers/ | Done |
 | CLI entry points | src/lens/cli.py | Done |
-| Configurable data directory (~/.lens) | src/lens/config.py | Not Started |
-| Structured logging | src/lens/logging.py | Not Started |
-| Feed state tracker (collection states) | src/lens/pipeline/ | Not Started |
-| Pipeline recovery (retry failed items) | src/lens/pipeline/ | Not Started |
-| Retrieval fetch tests | tests/retrieval/ | Not Started |
-| E2E integration test (collection only) | tests/ | Not Started |
+| Configurable data directory (~/.lens) | src/lens/config.py | Done |
+| Structured logging | src/lens/ (all modules) | Done |
+| Feed state tracker (collection states) | src/lens/pipeline/state.py | Done |
+| Pipeline recovery (retry failed items) | src/lens/pipeline/orchestrator.py | Done |
+| Retrieval fetch tests | tests/collect/test_fetcher.py | Done |
+| E2E integration test (collection only) | tests/integration/test_collection_e2e.py | Done |
 
 ## References
 
