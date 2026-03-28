@@ -11,6 +11,7 @@ import click
 from lens.config import load_config, resolve_stage_provider
 from lens.errors import ConfigError
 from lens.output.digest import generate_all_digests
+from lens.output.export import export_all
 from lens.pipeline import run_collection, run_enrichment, run_pipeline
 from lens.providers import create_provider
 
@@ -218,6 +219,31 @@ def digest(data_dir: Path | None, verbose: bool) -> None:
     for path in paths:
         click.echo(f"   {path.name}")
     click.echo(f"   {len(paths)} feeds")
+
+
+@cli.command(name="export")
+@click.option("--data-dir", default=None, type=click.Path(path_type=Path), help="Data directory.")
+@click.option(
+    "--format",
+    "fmt",
+    default="json",
+    type=click.Choice(["json", "obsidian"]),
+    help="Export format.",
+)
+@click.option("--verbose", is_flag=True, help="Enable verbose output.")
+def export_cmd(data_dir: Path | None, fmt: str, verbose: bool) -> None:
+    """Export processed summaries as JSON or Obsidian notes (no LLM)."""
+    config = load_config(data_dir_override=data_dir)
+    _configure_logging("debug" if verbose else config.log_level)
+
+    paths = export_all(
+        processed_dir=config.processed_dir,
+        export_dir=config.data_dir / "export",
+        fmt=fmt,
+    )
+
+    click.echo(f"Export complete! ({fmt})")
+    click.echo(f"   {len(paths)} files written")
 
 
 @cli.command()

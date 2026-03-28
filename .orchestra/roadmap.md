@@ -48,7 +48,7 @@ Produces consumable output from enriched content. `lens digest` generates a per-
 
 - PRD: [.orchestra/work/digest-export/prd.md](.orchestra/work/digest-export/prd.md)
 - Dependency: Enrichment Pipeline
-- Status: Not Started
+- Status: Complete
 
 ### Scaling Spike
 

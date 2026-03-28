@@ -1,7 +1,7 @@
 # Digest and Export -- Execution Spec
 
 **PRD:** [Digest and Export](prd.md)
-**Status:** Draft
+**Status:** Complete
 
 ## Approach
 
@@ -80,7 +80,7 @@ Derive from [gherkin.md](gherkin.md) -- Step 3 scenarios. Write first in `tests/
 
 Acceptance: all tests pass; `uv run pytest tests/output/test_export.py` green
 
-### Step 4: `lens export` CLI command
+### Step 4: `lens export` CLI command — ticket: 86e0m8m0n
 
 Add a `lens export` command with `--format` flag supporting `json` (default) and `obsidian`.
 

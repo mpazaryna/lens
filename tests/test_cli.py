@@ -198,3 +198,44 @@ class TestDigestCommand:
             )
 
         assert result.exit_code == 0
+
+
+class TestExportCommand:
+    """Tests for the lens export CLI command."""
+
+    def test_export_default_is_json(self, tmp_data_dir: Path) -> None:
+        """Default export format is JSON."""
+        runner = CliRunner()
+        with patch("lens.cli.export_all") as mock_export:
+            mock_export.return_value = [tmp_data_dir / "export" / "test.json"]
+            result = runner.invoke(cli, ["export", "--data-dir", str(tmp_data_dir)])
+
+        assert result.exit_code == 0
+        call_kwargs = mock_export.call_args[1]
+        assert call_kwargs["fmt"] == "json"
+
+    def test_export_obsidian_format(self, tmp_data_dir: Path) -> None:
+        """--format obsidian invokes Obsidian export."""
+        runner = CliRunner()
+        with patch("lens.cli.export_all") as mock_export:
+            mock_export.return_value = []
+            result = runner.invoke(
+                cli, ["export", "--data-dir", str(tmp_data_dir), "--format", "obsidian"]
+            )
+
+        assert result.exit_code == 0
+        call_kwargs = mock_export.call_args[1]
+        assert call_kwargs["fmt"] == "obsidian"
+
+    def test_export_no_api_key_required(self, tmp_data_dir: Path) -> None:
+        """No API key needed for export."""
+        runner = CliRunner()
+        with patch("lens.cli.export_all") as mock_export:
+            mock_export.return_value = []
+            result = runner.invoke(
+                cli,
+                ["export", "--data-dir", str(tmp_data_dir)],
+                env={"LENS_API_KEY": "", "ANTHROPIC_API_KEY": ""},
+            )
+
+        assert result.exit_code == 0
