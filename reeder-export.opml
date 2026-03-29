@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+<head>
+<title>Feeds</title>
+</head>
+<body>
+<outline text="Anyone Can Play Guitar" title="Anyone Can Play Guitar" htmlUrl="https://www.youtube.com/channel/UCp7Ou7C15WhEKc9pgxQkSYg" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCp7Ou7C15WhEKc9pgxQkSYg" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC_Z4IdXPGwe4zvZXiCzWMVw" text="Pow Music" type="rss" htmlUrl="https://www.youtube.com/channel/UC_Z4IdXPGwe4zvZXiCzWMVw" title="Pow Music" />
+<outline text="00.00 primary" title="00.00 primary">
+<outline title="RSS Feed" type="rss" xmlUrl="https://alphasignal.ai/join-1?format=rss" text="RSS Feed" htmlUrl="https://alphasignal.ai" />
+</outline>
+<outline title="10.00 orgs" text="10.00 orgs">
+<outline htmlUrl="https://www.youtube.com/channel/UCKWaEZ-_VweaEx1j62do_vQ" text="IBM Technology" type="rss" title="IBM Technology" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKWaEZ-_VweaEx1j62do_vQ" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCUMwY9iS8oMyWDYIe6_RmoA" type="rss" text="No Boilerplate" title="No Boilerplate" htmlUrl="https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA" />
+<outline type="rss" title="Microsoft Research" htmlUrl="https://www.youtube.com/channel/UCCb9_Kn8F_Opb3UCGm-lILQ" text="Microsoft Research" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCCb9_Kn8F_Opb3UCGm-lILQ" />
+</outline>
+<outline text="10.05 ai" title="10.05 ai">
+<outline type="rss" text="𝐀𝐈 𝐦𝐨𝐧𝐤𝐬.𝐢𝐨 - Medium" title="𝐀𝐈 𝐦𝐨𝐧𝐤𝐬.𝐢𝐨 - Medium" htmlUrl="https://medium.com/aimonks?source=rss----63e328c0fcb7---4" xmlUrl="https://medium.com/feed/aimonks" />
+<outline text="Artificial Intelligence in Plain English - Medium" htmlUrl="https://ai.plainenglish.io?source=rss----78d064101951---4" xmlUrl="https://ai.plainenglish.io/feed" title="Artificial Intelligence in Plain English - Medium" type="rss" />
+<outline text="DeepLearningAI" title="DeepLearningAI" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCcIXc5mJsHVYTZR1maL5l9w" type="rss" htmlUrl="https://www.youtube.com/channel/UCcIXc5mJsHVYTZR1maL5l9w" />
+<outline title="AI Newsletter" type="rss" xmlUrl="https://nlp.elvissaravia.com/feed" htmlUrl="https://nlp.elvissaravia.com" text="AI Newsletter" />
+<outline type="rss" title="RSS Feed" text="RSS Feed" htmlUrl="https://alphasignal.ai" xmlUrl="https://alphasignal.ai/join-1?format=rss" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCL7przoMtZTmiQMhc9ifIww" text="echohive" htmlUrl="https://www.youtube.com/channel/UCL7przoMtZTmiQMhc9ifIww" title="echohive" type="rss" />
+</outline>
+<outline text="10.05 ai youtube " title="10.05 ai youtube ">
+<outline htmlUrl="https://www.youtube.com/channel/UC55ODQSvARtgSyc8ThfiepQ" text="Sam Witteveen" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC55ODQSvARtgSyc8ThfiepQ" type="rss" title="Sam Witteveen" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCHsThxa9HvDpSywv4bP55NA" text="J. Gravelle" type="rss" htmlUrl="https://www.youtube.com/channel/UCHsThxa9HvDpSywv4bP55NA" title="J. Gravelle" />
+<outline title="LlamaIndex" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCeRjipR4_SsCddq9VZ2AeKg" text="LlamaIndex" htmlUrl="https://www.youtube.com/channel/UCeRjipR4_SsCddq9VZ2AeKg" type="rss" />
+<outline title="Goda Go" text="Goda Go" htmlUrl="https://www.youtube.com/channel/UCrWUuwQOvfBYi0JQzigbr_g" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCrWUuwQOvfBYi0JQzigbr_g" type="rss" />
+<outline htmlUrl="https://www.youtube.com/channel/UCy6rH4hKHMLdd5s-FUrto7Q" text="Adam Lucek" title="Adam Lucek" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCy6rH4hKHMLdd5s-FUrto7Q" type="rss" />
+</outline>
+<outline text="10.05 ai.people" title="10.05 ai.people">
+<outline title="Dave Ebbelaar" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCn8ujwUInbJkBhffxqAPBVQ" text="Dave Ebbelaar" type="rss" htmlUrl="https://www.youtube.com/channel/UCn8ujwUInbJkBhffxqAPBVQ" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCqcbQf6yw5KzRoDDcZ_wBSw" title="Wes Roth" text="Wes Roth" type="rss" htmlUrl="https://www.youtube.com/channel/UCqcbQf6yw5KzRoDDcZ_wBSw" />
+<outline htmlUrl="https://www.youtube.com/channel/UCv83tO5cePwHMt1952IVVHw" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCv83tO5cePwHMt1952IVVHw" title="James Briggs" text="James Briggs" />
+<outline type="rss" htmlUrl="https://www.youtube.com/channel/UC1oXUA7qgs0GZc_yk46K2OQ" text="Alejandro AO" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC1oXUA7qgs0GZc_yk46K2OQ" title="Alejandro AO" />
+<outline title="Adrian Twarog" htmlUrl="https://www.youtube.com/channel/UCvM5YYWwfLwpcQgbRr68JLQ" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCvM5YYWwfLwpcQgbRr68JLQ" text="Adrian Twarog" />
+<outline title="Ryan &amp; Matt Data Science" htmlUrl="https://www.youtube.com/channel/UCKq-lHnyradGRmFClX_ACMw" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKq-lHnyradGRmFClX_ACMw" text="Ryan &amp; Matt Data Science" type="rss" />
+<outline title="Cobus Greyling" text="Cobus Greyling" type="rss" htmlUrl="https://medium.com/@cobusgreyling?source=rss-b0fbe613be9d------2" xmlUrl="https://medium.com/@cobusgreyling/feed" />
+<outline xmlUrl="https://medium.com/feed/@fabio.matricardi" title="Fabio Matricardi on Medium" text="Fabio Matricardi on Medium" htmlUrl="https://medium.com/@fabio.matricardi?source=rss-62d264ed2dcb------2" type="rss" />
+<outline xmlUrl="https://medium.com/feed/@valentinaalto" htmlUrl="https://medium.com/@valentinaalto?source=rss-341264d69dd4------2" title="Stories by Valentina Alto on Medium" type="rss" text="Stories by Valentina Alto on Medium" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCXUPKJO5MZQN11PqgIvyuvQ" htmlUrl="https://www.youtube.com/channel/UCXUPKJO5MZQN11PqgIvyuvQ" type="rss" text="Andrej Karpathy" title="Andrej Karpathy" />
+<outline text="Mckay Wrigley" type="rss" htmlUrl="https://www.youtube.com/channel/UCXZFVVCFahewxr3est7aT7Q" title="Mckay Wrigley" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCXZFVVCFahewxr3est7aT7Q" />
+<outline htmlUrl="https://www.youtube.com/channel/UCtevzRsHEKhs-RK8pAqwSyQ" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCtevzRsHEKhs-RK8pAqwSyQ" type="rss" text="Leon van Zyl" title="Leon van Zyl" />
+<outline htmlUrl="https://paz.land/" type="rss" xmlUrl="https://paz.land/rss.xml" text="paz.land" title="paz.land" />
+<outline title="Stories by Christian Martinez Founder of The Financial Fox on Medium" text="Stories by Christian Martinez Founder of The Financial Fox on Medium" type="rss" htmlUrl="https://medium.com/@christianmartinezfinancialfox?source=rss-76c278e2a412------2" xmlUrl="https://medium.com/feed/@christianmartinezfinancialfox" />
+</outline>
+<outline text="10.05 ai.secondary" title="10.05 ai.secondary">
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCui4jxDaMb53Gdh-AZUTPAg" type="rss" text="Liam Ottley" title="Liam Ottley" htmlUrl="https://www.youtube.com/channel/UCui4jxDaMb53Gdh-AZUTPAg" />
+<outline htmlUrl="https://www.youtube.com/channel/UCDq7SjbgRKty5TgGafW8Clg" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCDq7SjbgRKty5TgGafW8Clg" type="rss" text="Prompt Engineering" title="Prompt Engineering" />
+<outline htmlUrl="https://www.youtube.com/channel/UCuGxbFmuThl3vWO-tozt43A" title="Coding Crash Courses" text="Coding Crash Courses" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCuGxbFmuThl3vWO-tozt43A" />
+<outline text="Johannes Jolkkonen" type="rss" htmlUrl="https://www.youtube.com/channel/UCl6mot8r88CN6HM8kd2IEYg" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCl6mot8r88CN6HM8kd2IEYg" title="Johannes Jolkkonen" />
+<outline htmlUrl="https://learnaitogethernewsletter.substack.com" title="Learn AI Together" type="rss" xmlUrl="https://learnaitogethernewsletter.substack.com/feed" text="Learn AI Together" />
+<outline title="Aniket Hingane on Medium" type="rss" text="Aniket Hingane on Medium" xmlUrl="https://medium.com/@learn-simplified/feed" htmlUrl="https://medium.com/@learn-simplified?source=rss-eda76219b00a------2" />
+<outline title="Stories by Han HELOIR YAN, Ph.D. ☕️ on Medium" xmlUrl="https://medium.com/@han.heloir/feed" type="rss" htmlUrl="https://medium.com/@han.heloir?source=rss-4656cac95152------2" text="Stories by Han HELOIR YAN, Ph.D. ☕️ on Medium" />
+<outline type="rss" text="AI Jason" title="AI Jason" htmlUrl="https://www.youtube.com/channel/UCrXSVX9a1mj8l0CMLwKgMVw" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCrXSVX9a1mj8l0CMLwKgMVw" />
+<outline text="AI with Misbah" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCbhSQKQLW1b52_CGnroy8Ng" type="rss" htmlUrl="https://www.youtube.com/channel/UCbhSQKQLW1b52_CGnroy8Ng" title="AI with Misbah" />
+<outline text="Matt Williams" htmlUrl="https://www.youtube.com/channel/UCHaF9kM2wn8C3CLRwLkC2GQ" title="Matt Williams" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCHaF9kM2wn8C3CLRwLkC2GQ" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCC4EsuM0n_-u5_eOuZFCfpA" htmlUrl="https://www.youtube.com/channel/UCC4EsuM0n_-u5_eOuZFCfpA" type="rss" title="Groq" text="Groq" />
+</outline>
+<outline text="10.06 dev.people" title="10.06 dev.people">
+<outline title="Molly White's activity feed" xmlUrl="https://www.mollywhite.net/feed/feed.xml" htmlUrl="https://mollywhite.net/feed" text="Molly White's activity feed" type="rss" />
+<outline text="Simon Willison's Weblog" title="Simon Willison's Weblog" htmlUrl="http://simonwillison.net/" type="rss" xmlUrl="https://simonwillison.net/atom/everything/" />
+<outline text="Maggie Appleton" xmlUrl="https://maggieappleton.com/rss.xml" title="Maggie Appleton" type="rss" htmlUrl="https://maggieappleton.com/" />
+<outline xmlUrl="http://martinfowler.com/feed.atom" text="Martin Fowler" title="Martin Fowler" type="rss" htmlUrl="https://martinfowler.com/feed.atom" />
+<outline htmlUrl="https://www.youtube.com/channel/UCnVzApLJE2ljPZSeQylSEyg" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCnVzApLJE2ljPZSeQylSEyg" title="Data School" text="Data School" type="rss" />
+<outline text="NetworkChuck" htmlUrl="https://www.youtube.com/channel/UC9x0AN7BWHpCDHSm9NiJFJQ" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC9x0AN7BWHpCDHSm9NiJFJQ" type="rss" title="NetworkChuck" />
+<outline xmlUrl="https://www.data-is-plural.com/feed.xml" text="Data Is Plural" htmlUrl="https://www.data-is-plural.com" type="rss" title="Data Is Plural" />
+<outline htmlUrl="https://www.youtube.com/channel/UCVhQ2NnY5Rskt6UjCUkJ_DA" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCVhQ2NnY5Rskt6UjCUkJ_DA" title="ArjanCodes" text="ArjanCodes" type="rss" />
+</outline>
+<outline text="30.06 wellness" title="30.06 wellness">
+<outline title="Awakening at Home" text="Awakening at Home" htmlUrl="https://www.awakeningathome.org/blog/" xmlUrl="https://www.awakeningathome.org/blog?format=rss" type="rss" />
+<outline type="rss" title="Spirituality &amp; Practice" xmlUrl="https://www.spiritualityandpractice.com/rss/" text="Spirituality &amp; Practice" htmlUrl="https://www.spiritualityandpractice.com/rss" />
+<outline xmlUrl="https://karenmaezenmiller.com/feed/" title="Karen Maezen Miller" text="Karen Maezen Miller" type="rss" htmlUrl="https://karenmaezenmiller.com" />
+<outline title="Reasons to be Cheerful" htmlUrl="https://reasonstobecheerful.world/" text="Reasons to be Cheerful" type="rss" xmlUrl="https://reasonstobecheerful.world/feed/" />
+<outline title="grateful.org" text="grateful.org" type="rss" htmlUrl="https://grateful.org" xmlUrl="https://grateful.org/wp-json/wp/v2/pages/3234635" />
+<outline type="rss" title="Grateful Living" htmlUrl="https://www.youtube.com/channel/UCWKa5jvlOrH_KgX2UMbAEFw" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCWKa5jvlOrH_KgX2UMbAEFw" text="Grateful Living" />
+<outline text="Being Buk" type="rss" title="Being Buk" htmlUrl="https://jamesbukowiec.substack.com" xmlUrl="https://jamesbukowiec.substack.com/feed" />
+<outline title="Writing Around the Edges" xmlUrl="https://writingaroundtheedges.substack.com/feed" text="Writing Around the Edges" htmlUrl="https://writingaroundtheedges.substack.com" type="rss" />
+<outline title="The Cartoons Of Norm Rockwell" xmlUrl="https://thenorm.substack.com/feed" type="rss" text="The Cartoons Of Norm Rockwell" htmlUrl="https://thenorm.substack.com" />
+<outline xmlUrl="https://medium.com/feed/@drnicolejanz" type="rss" title="Dr Nicole Janz, Book Coach" text="Dr Nicole Janz, Book Coach" htmlUrl="https://medium.com/@drnicolejanz?source=rss-14fdb1f6c072------2" />
+<outline htmlUrl="https://medium.com/@ggreer153?source=rss-f482cecd441e------2" xmlUrl="https://medium.com/@ggreer153/feed" type="rss" title="Stories by Gage Greer on Medium" text="Stories by Gage Greer on Medium" />
+<outline title="Stories by Henry Pazaryna on Medium" text="Stories by Henry Pazaryna on Medium" htmlUrl="https://medium.com/@henrypazaryna?source=rss-7f88aeffc810------2" type="rss" xmlUrl="https://medium.com/@henrypazaryna/feed" />
+<outline type="rss" title="The Substack Post" text="The Substack Post" htmlUrl="https://post.substack.com" xmlUrl="https://read.substack.com/feed" />
+<outline title="A Working Library" htmlUrl="https://aworkinglibrary.com/feed/index.xml" type="rss" text="A Working Library" xmlUrl="https://aworkinglibrary.com/feed/index.xml" />
+<outline type="rss" htmlUrl="https://www.youtube.com/channel/UCvQECJukTDE2i6aCoMnS-Vg" title="Big Think" text="Big Think" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCvQECJukTDE2i6aCoMnS-Vg" />
+<outline text="Cory Doctorow" title="Cory Doctorow" xmlUrl="https://pluralistic.net/feed/" htmlUrl="https://pluralistic.net" type="rss" />
+<outline text="Zen Peacemakers" htmlUrl="https://zenpeacemakers.org" xmlUrl="http://zenpeacemakers.org/feed/" type="rss" title="Zen Peacemakers" />
+<outline xmlUrl="https://www.messynessychic.com/feed/" type="rss" title="Messy Nessy Chic" text="Messy Nessy Chic" htmlUrl="https://www.messynessychic.com/" />
+<outline title="wake and bake" type="rss" text="wake and bake" htmlUrl="https://alank.substack.com" xmlUrl="https://alank.substack.com/feed" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYOtQi5y0fYokVVJEJGlnvw" title="CountryHouseGent" htmlUrl="https://www.youtube.com/channel/UCYOtQi5y0fYokVVJEJGlnvw" type="rss" text="CountryHouseGent" />
+</outline>
+<outline title="40.01 photography" text="40.01 photography">
+<outline text="Aperture" title="Aperture" xmlUrl="https://aperture.org/feed/" htmlUrl="https://aperture.org/" type="rss" />
+<outline title="The Leica camera Blog" type="rss" htmlUrl="https://leica-camera.blog/" xmlUrl="https://www.leica-camera.blog/feed/" text="The Leica camera Blog" />
+<outline xmlUrl="https://www.featureshoot.com/feed/" type="rss" htmlUrl="https://www.featureshoot.com/" title="Feature Shoot" text="Feature Shoot" />
+<outline htmlUrl="https://www.youtube.com/channel/UCNp5Pn_IFRWKUI9XcwwIDyA" text="Leica Camera Australia" type="rss" title="Leica Camera Australia" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCNp5Pn_IFRWKUI9XcwwIDyA" />
+<outline text="Walk Like Alice" type="rss" title="Walk Like Alice" htmlUrl="https://www.youtube.com/channel/UCA84UKfLeSi9NSRKjQWGW-g" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCA84UKfLeSi9NSRKjQWGW-g" />
+<outline text="FREE" htmlUrl="https://www.youtube.com/channel/UChgZlXub-dVuGtTq11O7yZA" title="FREE" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UChgZlXub-dVuGtTq11O7yZA" />
+<outline type="rss" title="Amy Roth Photo’s Substack" xmlUrl="https://amyrothphoto.substack.com/feed" text="Amy Roth Photo’s Substack" htmlUrl="https://amyrothphoto.substack.com" />
+<outline text="Photos, mostly" type="rss" title="Photos, mostly" xmlUrl="https://lionelsmint.substack.com/feed" htmlUrl="https://lionelsmint.substack.com" />
+<outline title="Dougstack" text="Dougstack" type="rss" htmlUrl="https://douggolden.substack.com" xmlUrl="https://douggolden.substack.com/feed" />
+<outline text="In the Flash" title="In the Flash" type="rss" htmlUrl="https://dinalitovsky.substack.com" xmlUrl="https://dinalitovsky.substack.com/feed" />
+<outline xmlUrl="https://lucylumen.substack.com/feed" type="rss" title="Love Lucy" htmlUrl="https://lucylumen.substack.com" text="Love Lucy" />
+<outline htmlUrl="https://newphotographyschool.substack.com" text="New Photography School" type="rss" title="New Photography School" xmlUrl="https://newphotographyschool.substack.com/feed" />
+<outline xmlUrl="https://wesley.substack.com/feed" text="Process ☼ On Photography, by Wesley Verhoeve" type="rss" title="Process ☼ On Photography, by Wesley Verhoeve" htmlUrl="https://wesley.substack.com" />
+<outline xmlUrl="https://robwalker.substack.com/feed" title="The Art of Noticing" type="rss" text="The Art of Noticing" htmlUrl="https://robwalker.substack.com" />
+<outline type="rss" htmlUrl="https://medium.com/@wizwow?source=rss-32a8392c63cb------2" xmlUrl="https://medium.com/feed/@wizwow" text="Don Giannatti" title="Don Giannatti" />
+<outline type="rss" htmlUrl="https://www.youtube.com/channel/UC7T8roVtC_3afWKTOGtLlBA" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC7T8roVtC_3afWKTOGtLlBA" title="The Art of Photography" text="The Art of Photography" />
+<outline text="Simon d'Entremont" htmlUrl="https://www.youtube.com/channel/UCH6acC9jnug-mI4vdGvuDbA" title="Simon d'Entremont" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCH6acC9jnug-mI4vdGvuDbA" />
+</outline>
+<outline text="40.03 painting" title="40.03 painting">
+<outline type="rss" htmlUrl="https://www.youtube.com/channel/UC6gc5Ji5m0foy6kWX4EYVJA" title="Bethany Thiele, Art Teacher" text="Bethany Thiele, Art Teacher" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC6gc5Ji5m0foy6kWX4EYVJA" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCm73w5KMbbQh1INo2urzQpA" htmlUrl="https://www.youtube.com/channel/UCm73w5KMbbQh1INo2urzQpA" type="rss" title="M3lart" text="M3lart" />
+<outline title="Art with Flo" type="rss" text="Art with Flo" htmlUrl="https://www.youtube.com/channel/UCVJ5hHQMXBiRwNv394EOj_w" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCVJ5hHQMXBiRwNv394EOj_w" />
+<outline text="The Painting Project" title="The Painting Project" type="rss" htmlUrl="https://www.youtube.com/channel/UCtbgFYVUoodr_9SaUoV5_Fw" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCtbgFYVUoodr_9SaUoV5_Fw" />
+<outline title="Saskia Jaeger" text="Saskia Jaeger" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCpNvcXLw8RAAN_bzSdI-H5Q" htmlUrl="https://www.youtube.com/channel/UCpNvcXLw8RAAN_bzSdI-H5Q" />
+<outline htmlUrl="https://www.youtube.com/channel/UCqNhhFYP5f1G4IBhdZOGZ3g" type="rss" text="Monet Cafe' with Artist Susan Jenkins" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCqNhhFYP5f1G4IBhdZOGZ3g" title="Monet Cafe' with Artist Susan Jenkins" />
+</outline>
+<outline title="40.09 artists" text="40.09 artists">
+<outline xmlUrl="https://pattismith.substack.com/feed" text="Patti Smith" type="rss" title="Patti Smith" htmlUrl="https://pattismith.substack.com" />
+<outline type="rss" htmlUrl="https://chanceops.substack.com" xmlUrl="https://garyhustwit.substack.com/feed" text="Chance Operations" title="Chance Operations" />
+<outline title="Austin Kleon" text="Austin Kleon" htmlUrl="https://austinkleon.com" xmlUrl="https://austinkleon.com/feed/" type="rss" />
+<outline title="Art – BOOOOOOOM! – CREATE * INSPIRE * COMMUNITY * ART * DESIGN * MUSIC * FILM * PHOTO * PROJECTS" type="rss" htmlUrl="https://www.booooooom.com" xmlUrl="https://www.booooooom.com/blog/art/feed/" text="Art – BOOOOOOOM! – CREATE * INSPIRE * COMMUNITY * ART * DESIGN * MUSIC * FILM * PHOTO * PROJECTS" />
+<outline xmlUrl="https://haverandsparrow.substack.com/feed" type="rss" text="haver &amp; sparrow" title="haver &amp; sparrow" htmlUrl="https://haverandsparrow.substack.com" />
+</outline>
+<outline text="40.10 music" title="40.10 music">
+<outline title="Turntable Kitchen" htmlUrl="https://www.turntablekitchen.com/" xmlUrl="https://www.turntablekitchen.com/feed/" text="Turntable Kitchen" type="rss" />
+<outline type="rss" htmlUrl="https://www.youtube.com/channel/UCkxv7FUeKqdT7wIS_OqL3Gg" text="Bob Dylan Center" title="Bob Dylan Center" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCkxv7FUeKqdT7wIS_OqL3Gg" />
+<outline htmlUrl="https://earmilk.com" xmlUrl="https://earmilk.com/feed/" text="EARMILK" type="rss" title="EARMILK" />
+</outline>
+<outline text="50.05 yoga" title="50.05 yoga">
+<outline xmlUrl="https://integralyogamagazine.org/feed/" type="rss" text="Integral Yoga® Magazine" title="Integral Yoga® Magazine" htmlUrl="https://integralyogamagazine.org/" />
+<outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCIYImjBo7odQiJsEY8eGS-w" htmlUrl="https://www.youtube.com/channel/UCIYImjBo7odQiJsEY8eGS-w" type="rss" text="Integral Yoga YouTube" title="Integral Yoga YouTube" />
+</outline>
+<outline title="70.01 building products" text="70.01 building products">
+<outline text="Stories by Piero Paialunga on Medium" htmlUrl="https://medium.com/@piero-paialunga?source=rss-254e653181d2------2" type="rss" xmlUrl="https://medium.com/@piero-paialunga/feed" title="Stories by Piero Paialunga on Medium" />
+<outline htmlUrl="https://www.youtube.com/channel/UCm_WkN0wg49-eG4SymAQ_4g" type="rss" text="Harvard Innovation Labs" title="Harvard Innovation Labs" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCm_WkN0wg49-eG4SymAQ_4g" />
+<outline text="Silvio Rizzi" type="rss" htmlUrl="https://gloria.social/@rizzi" xmlUrl="https://gloria.social/@rizzi.rss" title="Silvio Rizzi" />
+</outline>
+<outline text="70.04 pkm" title="70.04 pkm">
+<outline htmlUrl="https://boffosocko.com" text="Chris Aldrich" type="rss" title="Chris Aldrich" xmlUrl="https://boffosocko.com/feed/" />
+<outline type="rss" text="Harsh Browns" xmlUrl="https://visitmy.website/feed.xml" title="Harsh Browns" htmlUrl="https://visitmy.website/feed.xml" />
+<outline htmlUrl="https://medium.com/@theostowell?source=rss-54b13ad2b7d4------2" xmlUrl="https://medium.com/@theostowell/feed" type="rss" text="Obsidian Stories by Theo Stowell" title="Obsidian Stories by Theo Stowell" />
+<outline xmlUrl="https://medium.com/feed/obsidian-observer" text="Obsidian Observer - Medium" htmlUrl="https://medium.com/obsidian-observer?source=rss----dc0a52745260---4" type="rss" title="Obsidian Observer - Medium" />
+</outline>
+<outline text="70.05 cooking" title="70.05 cooking">
+<outline title="fermentersclub.com" htmlUrl="https://fermentersclub.com" text="fermentersclub.com" xmlUrl="https://fermentersclub.com/wp-json/wp/v2/pages/10354" type="rss" />
+</outline>
+<outline text="70.07 reading &amp; writing" title="70.07 reading &amp; writing">
+<outline type="rss" htmlUrl="https://www.newyorker.com" xmlUrl="https://www.newyorker.com/feed/books/page-turner" text="Page-Turner: Book Reviews, Literature, and Writing" title="Page-Turner: Book Reviews, Literature, and Writing" />
+<outline htmlUrl="https://stevenpressfield.com" type="rss" title="Steven Pressfield" xmlUrl="https://stevenpressfield.com/feed/" text="Steven Pressfield" />
+<outline text="Monsty" htmlUrl="https://www.youtube.com/channel/UCxpwnryMIjh-S4Tni-aN_AA" title="Monsty" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCxpwnryMIjh-S4Tni-aN_AA" type="rss" />
+<outline type="rss" text="The Marginalian" htmlUrl="https://www.themarginalian.org" xmlUrl="http://feedproxy.google.com/brainpickings/rss" title="The Marginalian" />
+</outline>
+<outline text="99 misc" title="99 misc">
+<outline text="thecoaster.net" htmlUrl="https://thecoaster.net" xmlUrl="https://thecoaster.net/wp-json/wp/v2/pages/21149" title="thecoaster.net" type="rss" />
+</outline>
+<outline title="zArchive" text="zArchive">
+<outline xmlUrl="https://www.evalotta.net/home?format=rss" title="RSS Feed" type="rss" text="RSS Feed" htmlUrl="https://www.evalotta.net" />
+<outline xmlUrl="http://feeds.feedburner.com/saidthegramophone/stg" title="Said the Gramophone" type="rss" text="Said the Gramophone" htmlUrl="https://www.saidthegramophone.com/" />
+<outline text="Open Mind Investors" xmlUrl="https://openmindinvestors.substack.com/feed" htmlUrl="https://openmindinvestors.substack.com" type="rss" title="Open Mind Investors" />
+<outline type="rss" htmlUrl="https://thesweetsetup.com/" title="The Sweet Setup" text="The Sweet Setup" xmlUrl="https://thesweetsetup.com/feed/" />
+<outline title="Asbury Park Reporter" htmlUrl="https://asburyparkreporter.com/" xmlUrl="https://asburyparkreporter.com/feed/" text="Asbury Park Reporter" type="rss" />
+<outline htmlUrl="https://heathercoxrichardson.substack.com" type="rss" xmlUrl="https://heathercoxrichardson.substack.com/feed" text="Letters from an American" title="Letters from an American" />
+<outline type="rss" xmlUrl="https://blog.thenounproject.com/feed/" title="The Noun Project Blog" text="The Noun Project Blog" htmlUrl="https://blog.thenounproject.com" />
+</outline>
+</body>
+</opml>

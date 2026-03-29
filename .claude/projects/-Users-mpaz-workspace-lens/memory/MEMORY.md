@@ -1,3 +1,4 @@
 - [Git branching convention](feedback_git_branching.md) — ticket/{id}-{name} branches, standardized pre-commit hook
 - [Functional programming default](feedback_functional_first.md) — functions over classes per ADR-001, OOP only when clearly beneficial
+- [Ollama-first development](project_ollama_first.md) — enrichment dev uses local Ollama only, no cloud APIs
 - [ClickUp API access](reference_clickup.md) — use REST API directly, key in .env, not MCP proxy
